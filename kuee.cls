@@ -24,8 +24,8 @@
   \gdef\@department{電気電子工学科}
 \else
   \gdef\@maintitle{修\hfil 士\hfil 論\hfil 文}
-  \gdef\@course{京都大学大学院工学研究科}
-  \gdef\@department{電気工学専攻}
+  \gdef\@course{京都大学大学院情報学研究科}
+  \gdef\@department{システム科学専攻}
 \fi
 
 %%%%%%%%%%%%%%
