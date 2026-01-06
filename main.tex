@@ -1,0 +1,52 @@
+\documentclass[shuuron]{kuee} % ←ここが修士化の本丸
+
+% ===== packages =====
+\usepackage{booktabs}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{multirow}
+
+% 図の探索パス（必要なら）
+\graphicspath{{figures/}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% ===== cover info =====
+\title{環境の物理系変化に対する四脚ロボットによる歩行タスクの転移可能性}
+\etitle{Transferability of Walking Tasks for Quadruped Robots in Response to Changes in Physical Environment Dynamics}
+\author{志賀 泰斗}
+\eauthor{Taito Shiga}
+\professor{石井 信 教授}
+% course/department は cls 側で修士用が既定値に切り替わりますが、
+% 表示を上書きしたいなら \course{...} \department{...} を書けます。:contentReference[oaicite:3]{index=3}
+\date{令和6年2月8日}
+
+\begin{document}
+\maketitle
+
+\begin{eabstract}
+% English abstract here
+\end{eabstract}
+
+\tableofcontents
+
+% ===== chapters =====
+\input{chapters/chapter1}
+
+\begin{acknowledgements}
+% 謝辞
+\end{acknowledgements}
+
+% \include{chapters/appendix}
+
+% ===== bibliography =====
+% 1) bst を refs/ に置く場合
+\bibliographystyle{refs/kueethesis}
+% 2) bib を refs/ に置く場合（例：refs/main.bib）
+\bibliography{refs/main}
+
+\end{document}
