@@ -1,0 +1,47 @@
+\chapter{関連研究}
+\label{chap:background}
+\section{強化学習}
+\label{chap:rl}
+強化学習(Reinforcement Learning:RL)は,エージェントが環境内での行動を通じてタスクを学習することを目的とした
+一種の機械学習手法である\cite{sutton2018reinforcement}.このプロセスでは,エージェントは状態から行動を選択し,
+各状態における状態遷移確率にしたがい次の状態へ遷移する.エージェントはそれぞれの遷移に対して報酬を受け取り,この報酬の最大化を目指す
+最適化問題を解くことによって,どの行動系列が最も有益であるのかを学習する.
+重要なのは,エージェントが特定の指令を受けることなく,試行錯誤を通じて環境と相互作用することによってのみ学習が進められることである.この過程
+においてエージェントは即時に得られる報酬だけでなく,将来得られるであろう累積報酬予測を考慮して行動を選択しなければならない.強化学習
+が扱う問題は多くの場合,マルコフ決定過程(Markov Decision Process: MDP)\cite{markov}としてモデル化された環境内で行動し,
+エージェントはその環境からの十分な観測を通じて,タスクの遂行に適切な状態遷移を引き起こす行動をとる必要がある.
+上で述べたMDPは,タプル$\mathcal{M}=(\mathcal{\mu_{0}}, \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$で表現される.
+ここで,$\mathcal{\mu_{0}}$は初期状態空間を,$\mathcal{S}$は状態空間を,$\mathcal{A}$は行動空間を表す.$\mathcal{P}$は確率関数の集合で,
+$\mathcal{P}:\mathcal{S}\times\mathcal{A}\times\mathcal{S}\rightarrow\mathbb{R}$であり,$\mathcal{P}(s'|s,a)$は
+状態$s$から行動$a$をとったときに状態$s'$へ遷移する確率を表す.また,$\mathcal{R}:\mathcal{S}\times\mathcal{A}\times\mathcal{S}\rightarrow\mathbb{R}$は報酬関数であり,
+状態$s$から行動$a$をとったときに状態$s'$へ遷移するときに得られる報酬を表す.そして,$\gamma\in(0,1]$は割引率と呼ばれ,
+将来得られる報酬の重要度を決定する.
+
+エージェントは$\mathcal{M}$の中で,
+状態$s$において行動$a$をとる確率が$\pi(a|s)$で与えられる確率的な方策$\pi:\mathcal{S}\rightarrow\mathcal{A}$に基づいて行動する.
+あるMDP$\mathcal{M}$と方策$\pi$が与えられると状態価値関数$V_{\mathcal{M}}^{\pi}(s)$が以下の式(\ref{eq:V})で考えられる.
+\begin{equation}
+    V_{\mathcal{M}}^{\pi}(s) = \mathbb{E}\left[\sum_{t=0}^{T}\gamma^{t}r_{t}|\pi,s\right]
+    \label{eq:V}
+\end{equation}
+ここで,$r_{t}$は時刻$t$における報酬,$T$はエージェントがタスクが完了するまで$\mathcal{M}$内で行動する回数,すなわちエピソードの長さを
+表す.エピソードに終了条件を設定しないnon episodicなタスクの場合,$T=\infty$となる.
+期待値$\mathbb{E}$は$s_0\sim\mu_0$,$a_i\sim\pi(\cdot|s_i)$,$s_{i+1}\sim\mathcal{T}(\cdot|s_i,a_i)$で取る.
+状態価値関数は状態$s$からこの先方策$\pi$に基づいて行動した場合に得られるであろう割引累積報酬の期待値を表し,その状態にいる価値を推定する.
+また,状態$s$から行動$a$を取ったときに期待される割引累積報酬を推定する行動価値関数$Q_{\mathcal{M}}^{\pi}(s,a)$が式(\ref{eq:Q})で導出できる.
+\begin{equation}
+    Q_{\mathcal{M}}^{\pi}(s,a) = \mathbb{E}_{s'\sim\mathcal{T}(\cdot|s,a)}[\mathcal{R}(s,a,s')+{\gamma}V_{\mathcal{M}}^{\pi}(s')]
+    \label{eq:Q}
+\end{equation}
+
+以上からRLの基本となるゴールは,$Q_{\mathcal{M}}^{*}(s,a)=\sup\limits_{\pi}Q_{\mathcal{M}}^\pi(s,a)$
+なる最適な状態および行動価値関数から最適な方策$\forall s \in \mathcal{S},\pi_{\mathcal{M}}^{*}(s)=\argmax\limits_{a \in \mathcal{A}}Q_{\mathcal{M}}^{*}(s,a)$
+を得ることである.よって方策更新により最大化される目的関数$\mathcal{J}(\pi)$は
+\begin{equation}
+    \mathcal{J}(\pi) = \mathbb{E}_{(s,a)\sim\mu^{\pi}(s,a)}[\mathcal{R}(s,a,s')]
+    \label{eq:pi}
+\end{equation}
+として表される.ここで$\mu^{\pi}(s,a)$は方策$\pi$に基づく定常状態行動確率分布であり,
+この方策の下でエピソードにわたって行動を続けたときの,状態と行動のペアの長期的な分布を表す\cite{bellemare2017distributional}.
+また,RLの問題は予測と方策改善の二つのフェーズに分けられる.予測の段階では現在の方策の質が評価され,方策改善フェーズでは
+予測で評価された方策を改善するよう方策が調節される.RLアルゴリズムはこれらの二つのステップを反復して方策の最適化を行う.
