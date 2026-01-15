@@ -1,0 +1,72 @@
+% tables/hyperparameters_tdmpc2.tex
+% Requires: \usepackage{booktabs}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Hyperparameter settings. We directly apply settings in~\cite{hansen2023td} for the shared hyperparameters without further tuning. We share the same setting across all tasks demonstrated before.}
+  \label{tab:hyperparameters}
+  \footnotesize
+  \setlength{\tabcolsep}{6pt}
+  \renewcommand{\arraystretch}{1.15}
+
+  \begin{tabular}{l|c}
+    \toprule
+    \textbf{Hyperparameter} & \textbf{Value} \\
+    \midrule
+
+    \multicolumn{2}{l}{\textbf{Training}} \\
+    \midrule
+    Learning rate & $3 \times 10^{-4}$ \\
+    Batch size & 256 \\
+    Buffer size & 1,000,000 \\
+    Sampling & Uniform \\
+    Reward loss coefficient ($c_r$) & 0.1 \\
+    Value loss coefficient ($c_q$) & 0.1 \\
+    Consistency loss coefficient ($c_d$) & 20 \\
+    Discount factor ($\gamma$) & 0.99 \\
+    Target network update rate & 0.5 \\
+    Gradient Clipping Norm & 20 \\
+    Optimizer & Adam \\
+    \midrule
+
+    \multicolumn{2}{l}{\textbf{Planner}} \\
+    \midrule
+    MPPI Iterations & 6 \\
+    Number of samples & 512 \\
+    Number of elites & 64 \\
+    Number policy rollouts & 24 \\
+    horizon & 3 \\
+    Minimum planner std & 0.05 \\
+    Maximum planner std & 2 \\
+    \midrule
+
+    \multicolumn{2}{l}{\textbf{Actor}} \\
+    \midrule
+    Minimum policy log std & $-10$ \\
+    Maximum policy log std & 2 \\
+    Entropy coefficient ($\alpha$) & $1 \times 10^{-4}$ \\
+    Prior constraint coefficient ($\beta$) & 1.0 \\
+    Scale Threshold ($s$) & 2.0 \\
+    \midrule
+
+    \multicolumn{2}{l}{\textbf{Critic}} \\
+    \midrule
+    Q functions Ensemble & 5 \\
+    Number of bins & 101 \\
+    Minimum value & $-10$ \\
+    Maximum value & 10 \\
+    \midrule
+
+    \multicolumn{2}{l}{\textbf{Architecture (5M)}} \\
+    \midrule
+    Encoder layers & 2 \\
+    Encoder dimension & 256 \\
+    MLP hidden layer dimension & 512 \\
+    Latent space dimension & 512 \\
+    Task embedding dimension & 96 \\
+    Q function drop out rate & 0.01 \\
+    MLP activation & Mish \\
+    MLP Normalization & LayerNorm \\
+    \bottomrule
+  \end{tabular}
+\end{table}
