@@ -11,9 +11,8 @@
 \label{sec:tdmpc2}
 
 TD-MPC2 は，
-学習された世界モデル上での計画（Planning）と，
-時間的差分（Temporal Difference, TD）学習による価値推定を統合した，
-モデルベース強化学習（Model-Based Reinforcement Learning, MBRL）の手法である\cite{hansen2023td}．
+学習された世界モデル上での計画（Planning）と，TD学習による価値推定を統合した，
+MBRLの手法である\cite{hansen2023td}．
 本節では，
 TD-MPC2 の背景にある世界モデルの概念とその変遷を整理した後，
 モデル予測制御の枠組み，
@@ -47,7 +46,7 @@ TD-MPC2 の背景にある世界モデルの概念とその変遷を整理した
 
 初期の世界モデル研究では，
 潜在表現 \(\mathbf{z}_t\) が観測の情報を十分に保持していることを保証するため，
-Variational Autoencoder (VAE) を用いた再構成型の学習が広く用いられていた．
+Variational Autoencoder (VAE) を用いた再構成型の学習が広く用いられていた\cite{ha2018world}．
 VAE では，
 観測 \(\mathbf{o}_t\) から潜在表現 \(\mathbf{z}_t\) を推定するエンコーダと，
 \(\mathbf{z}_t\) から元の観測を復元するデコーダを同時に学習する．
