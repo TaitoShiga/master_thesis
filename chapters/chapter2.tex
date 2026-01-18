@@ -1,7 +1,10 @@
 \chapter{研究背景}
 \label{chap:background}
-\section{強化学習の基礎理論}
+\section{強化学習}
 \label{chap:rl}
+
+\subsection{基礎理論}
+\label{chap:fund_rl}
 強化学習(Reinforcement Learning:RL)は,エージェントが環境内での行動を通じてタスクを学習することを目的とした
 一種の機械学習手法である\cite{sutton2018reinforcement}.このプロセスでは,エージェントは状態から行動を選択し,
 各状態における状態遷移確率にしたがい次の状態へ遷移する.エージェントはそれぞれの遷移に対して報酬を受け取り,この報酬の最大化を目指す
@@ -46,6 +49,21 @@ $\mathcal{P}:\mathcal{S}\times\mathcal{A}\times\mathcal{S}\rightarrow\mathbb{R}$
 また,RLの問題は予測と方策改善の二つのフェーズに分けられる.予測の段階では現在の方策の質が評価され,方策改善フェーズでは
 予測で評価された方策を改善するよう方策が調節される.RLアルゴリズムはこれらの二つのステップを反復して方策の最適化を行う.
 
+\subsection{TD学習}
+\label{sec:tderror}
+Temporal Difference(TD)学習は,TD誤差と呼ばれる,1ステップ先の期待報酬の推定値と現在の期待報酬の推定値との差分
+を用いて価値関数を更新する手法である\cite{sutton1988learning}.TD学習はモデルフリーな予測を行う
+アルゴリズムであり,エージェントはMDPの情報が与えられない.よってエージェントはMDPのサンプルから
+状態価値を推定する.状態価値関数の更新則は以下の式\ref{eq:td}の通りとなる.
+\begin{equation}
+    \label{eq:td}
+    V_{\mathcal{M}}^{\pi}(s) \leftarrow V_{\mathcal{M}}^{\pi}(s) + \alpha(r_{t+1} + \gamma V_{\mathcal{M}}^{\pi}(s_{t+1}) - V_{\mathcal{M}}^{\pi}(s_{t}))
+\end{equation}
+ここで$\alpha$は学習率を表し,$r_{t+1}$は現在のステップ$t$で行動した結果,次のステップ$t+1$に遷移する際に得られた報酬である.
+$r_{t+1}+\gamma V_{\mathcal{M}}^\pi$はTD目標と呼ばれ,今回のサンプリングで得られた値を,
+$r_{t+1}+\gamma V_{\mathcal{M}}^\pi-V_{\mathcal{M}}^\pi$はTD誤差で,今回のサンプリングの値と前回までに得た値の差を表している.
+TD学習の利点は,学習に状態価値関数の推定値を用いているため,エージェントがエピソードを完了していなくても
+その状態から先の報酬を予測(ブートストラップ)し,学習を1ステップからでも行うことが可能である.
 
 % モデルベース強化学習の進展
 % TODO: dreamerとかも引用して、tdmpc2に偏った議論を避けるようにする

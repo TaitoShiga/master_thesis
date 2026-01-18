@@ -1,0 +1,262 @@
+\chapter{実験設定と評価方法}
+\label{chap:experiment}
+
+本章では，第\ref{chap:method}章で提案した明示的物理パラメータ推定に基づく適応的制御手法の有効性を検証するために用いた，実験環境，評価タスク，比較手法，および評価指標について述べる．本章では実験条件と評価手順のみを記述し，結果の解釈および考察は次章に譲る．
+
+
+\section{実験目的と検証仮説}
+\label{sec:exp_objective}
+
+本研究の目的は，物理パラメータが未知な環境において，明示的な同定に基づく条件付き計画を導入することで，MBRL+MPC における計画の信頼性と制御性能が向上することを示すことである．この目的に基づき，以下の仮説を検証する．
+
+\begin{itemize}
+\item \textbf{H1}: 提案手法は，静的な未知環境において，Non-adaptive TD-MPC2 と比較して性能劣化を抑制できる．
+\item \textbf{H2}: 提案手法は，真の物理パラメータを与えた Oracle TD-MPC2 に近い性能を示す．
+\item \textbf{H3}: 提案手法は，Domain Randomization と比較して，評価時の固定パラメータ環境におけるゼロショット汎化性能が高い，または同等の性能をより非保守的に達成する．
+\item \textbf{H4}: 提案手法は，エピソード内で物理パラメータが変化する動的環境においても，変化に追従する挙動を示す（拡張仮説）．
+\end{itemize}
+
+
+\section{実装概要と再現性}
+\label{sec:implementation_overview}
+
+\subsection{シミュレーション基盤（DMControl）の概要}
+\label{subsec:dmcontrol_overview}
+
+本研究の実験は，MuJoCo 物理エンジンに基づく DeepMind Control Suite（DMControl）\cite{tassa2018deepmindcontrolsuite} を用いて行った．DMControl は，連続制御タスク群（例: Pendulum，Walker 等）を統一的な API で提供し，観測，行動，報酬の定義がタスクごとに明確に設計されている．本研究では，既存タスクをベースとして，物理パラメータの摂動を付与したタスク（Randomized / Fixed / Dynamic）を実装し，未知環境への適応性能を評価した．
+
+\subsection{再現性のための共通設定}
+\label{subsec:reproducibility}
+
+すべての手法は同一コードベース上に実装し，比較手法間で計算手順や実装上の差異が生じないようにした．各実験は複数の乱数シードにより独立に実行し，統計的に安定した評価を行った．学習率，バッチサイズ，MPPI のサンプル数等のハイパーパラメータは Appendix（表\ref{tab:hyperparams}）にまとめる．
+
+\subsection{タスクごとの学習ステップ数}
+\label{subsec:task_steps}
+
+タスクごとにダイナミクスの複雑性や探索難易度が異なるため，本研究ではタスクごとに学習ステップ数を設定した．ただし，同一タスク内では，提案手法および比較手法が同一の学習ステップ数を共有することで，公平な比較を行った．タスク別の学習ステップ数，評価エピソード数，および実行設定を表\ref{tab:task_protocol}に示す．
+
+\begin{table}[t]
+\centering
+\caption{タスク別の学習および評価プロトコル（例．数値はあなたの実験設定に合わせて記入）}
+\label{tab:task_protocol}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Task} & \textbf{Train steps} & \textbf{\#Seeds} & \textbf{Eval episodes / condition} \\
+\midrule
+Pendulum-Swingup & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
+Walker-Walk (Mass) & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
+Walker-Walk (Actuator) & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
+Walker-Walk (Actuator Dynamic) & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{評価環境とタスク設計}
+\label{sec:task_design}
+
+\subsection{共通の MDP 設定}
+\label{subsec:mdp}
+
+各タスクは連続制御問題として定式化される．時刻 $t$ の観測を $\mathbf{o}_t$，行動を $\mathbf{a}_t$ とし，環境からスカラー報酬 $r_t$ を得る．本研究では，DMControl が提供する観測定義をそのまま用い，観測の正規化は行わない．行動は各タスクで $[-1, 1]$ にスケーリングされた連続値である．
+
+
+\subsection{評価タスク}
+\label{subsec:evaluation_tasks}
+
+\subsubsection{Walker-Walk タスク（基本設定）}
+\label{subsubsec:walker_base}
+
+Walker-Walk は，二次元平面上において二足歩行ロボットを前進歩行させる連続制御タスクである．ロボットは胴体（torso）および左右の股関節・膝関節・足首関節から構成され，動的バランスを維持しながら前進することが求められる．本研究では DMControl の \texttt{walker-walk} を用いる\cite{tassa2020dmcontrol}．環境設定を表\ref{tab:walker_env}に示す．
+
+\begin{table}[t]
+\centering
+\caption{Walker-Walk タスクの環境設定}
+\label{tab:walker_env}
+\begin{tabular}{lc}
+\toprule
+\textbf{項目} & \textbf{値} \\
+\midrule
+Task name & \texttt{walker-walk} \\
+Control period & 0.025 s（40 Hz） \\
+Episode length & 500 steps（action repeat=2 を含め 25 s 相当） \\
+Termination & Timeout のみ（転倒しても継続） \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{観測空間と行動空間}
+
+Walker-Walk の観測および行動空間を表\ref{tab:walker_spaces}に示す．観測は姿勢（$\sin,\cos$ 表現），胴体高さ，および速度（線速度・角速度）から構成される．行動は 6 つの関節トルクである．
+
+\begin{table}[t]
+\centering
+\caption{Walker-Walk の観測空間と行動空間}
+\label{tab:walker_spaces}
+\begin{tabular}{lcl}
+\toprule
+\textbf{項目} & \textbf{次元} & \textbf{内容} \\
+\midrule
+観測 $\mathbf{o}_t$ & 24 & orientations(14), height(1), velocity(9) \\
+行動 $\mathbf{a}_t$ & 6  & right/left hip,knee,ankle トルク \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{報酬関数}
+
+Walker-Walk の報酬は，立位の維持と前進速度を同時に促すよう設計されている．時刻 $t$ における報酬 $r_t$ は次式で定義される．
+\begin{align}
+r_t
+=
+\frac{
+r_{\mathrm{stand}} \cdot (5 r_{\mathrm{move}} + 1)
+}{6}.
+\label{eq:walker_reward}
+\end{align}
+
+立位報酬 $r_{\mathrm{stand}}$ は胴体高さと上向き度に基づき，
+\begin{align}
+r_{\mathrm{stand}}
+&=
+\frac{3 r_{\mathrm{height}} + r_{\mathrm{upright}}}{4},
+\\
+r_{\mathrm{height}}
+&=
+\mathrm{tol}(h_t; 1.2, \infty),
+\\
+r_{\mathrm{upright}}
+&=
+\frac{1 + u_t}{2},
+\end{align}
+とする．ただし $h_t$ は胴体の高さ，$u_t \in [-1,1]$ は胴体の上向き度を表す．
+
+移動報酬 $r_{\mathrm{move}}$ は水平方向速度 $v_t$ に基づき，
+\begin{align}
+r_{\mathrm{move}}
+=
+\mathrm{tol}(v_t; 1.0, \infty),
+\end{align}
+と定義する．ここで $\mathrm{tol}(\cdot)$ は DMControl における滑らかな tolerance 関数であり，指定した境界内では 1 をとり，境界から離れるほど連続的に 0 へ減衰する．本研究では，報酬定義を DMControl の実装に準拠する．
+
+
+\subsubsection{Pendulum-Swingup タスク}
+\label{subsubsec:pendulum}
+
+Pendulum-Swingup は，倒立振子を下向き初期状態から振り上げ，上向き姿勢を維持する連続制御タスクである．本研究では DMControl の \texttt{pendulum-swingup} を用いる\cite{tassa2020dmcontrol}．環境設定を表\ref{tab:pendulum_env}に示す．
+
+\begin{table}[t]
+\centering
+\caption{Pendulum-Swingup タスクの環境設定}
+\label{tab:pendulum_env}
+\begin{tabular}{lc}
+\toprule
+\textbf{項目} & \textbf{値} \\
+\midrule
+Task name & \texttt{pendulum-swingup} \\
+Control period & 0.02 s（50 Hz） \\
+Episode length & 500 steps（action repeat=2 を含む） \\
+Termination & Timeout のみ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{観測空間と行動空間}
+
+観測は角度の $\cos,\sin$ および角速度から構成され，$\mathbf{o}_t \in \mathbb{R}^3$ である．行動は振子軸のトルクであり，$\mathbf{a}_t \in [-1,1]$ の 1 次元連続値である．
+
+\paragraph{報酬関数}
+
+Pendulum-Swingup の報酬は，上向き姿勢（$\theta=0$）に近いほど高くなるよう設計されている．報酬は次式で与えられる．
+\begin{align}
+r_t
+=
+\mathrm{tol}(d_t; 0, 0),
+\label{eq:pendulum_reward}
+\end{align}
+ただし $d_t$ は上向き位置からの角度距離を表す．DMControl の実装では，$d_t$ に対して cosine 形状の滑らかな tolerance が適用されるため，上向き（$d_t=0$）で $r_t=1$，下向き（$d_t \approx \pi$）で $r_t \approx 0$ となる．本研究では制御コスト項は含めない（DMControl 準拠）．
+
+
+\section{物理パラメータ摂動と評価条件}
+\label{sec:perturbation_and_conditions}
+
+本研究では，学習時に用いる訓練環境（Randomized）と，汎化評価のための評価環境（Fixed / Dynamic）を実装し，未知環境への適応性能を検証する．本節では，摂動パラメータと評価条件をまとめる．
+
+\subsection{Domain Randomization（訓練環境）}
+\label{subsec:dr_training}
+
+Domain Randomization（DR）では，エピソードごとに物理パラメータをランダム化し，平均的に頑健な方策の学習を促す．本研究で用いたランダム化範囲を表\ref{tab:dr_ranges}に示す．いずれもエピソード内では固定とする．
+
+\begin{table}[t]
+\centering
+\caption{DR におけるランダム化パラメータと範囲}
+\label{tab:dr_ranges}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Task} & \textbf{Parameter} & \textbf{Range (per episode)} \\
+\midrule
+Walker-Walk (Mass) & torso mass & $0.5$--$2.5 \times$ default \\
+Walker-Walk (Actuator) & actuator gear scale & $0.4$--$1.4 \times$ default \\
+Pendulum-Swingup & pendulum mass & $0.5$--$2.5$ kg \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Zero-shot 汎化評価（固定パラメータ環境）}
+\label{subsec:fixed_eval}
+
+学習済みモデルのゼロショット汎化性能を評価するため，物理パラメータを固定した評価環境を複数用意する．例として，Walker-Walk（質量）では torso 質量をスケールした複数条件を用意し，in-distribution（DR 範囲内）と out-of-distribution（範囲外）で性能を比較する．評価条件の一覧は Appendix（表\ref{tab:fixed_conditions}）にまとめる．
+
+\subsection{動的環境（拡張評価）}
+\label{subsec:dynamic_eval}
+
+実環境では，バッテリー消耗や摩耗などにより，物理パラメータがエピソード内で時間変化する場合がある．そこで拡張評価として，Walker-Walk において actuator gear scale がエピソード内で線形に減衰する動的環境（\texttt{walker-walk\_actuator\_dynamic}）を用意する．本評価は，第\ref{chap:method}章の前提（エピソード内でほぼ一定）を厳密に満たさない状況での挙動観察を目的とし，結果章では補助的な分析として扱う．
+
+
+\section{比較手法}
+\label{sec:baselines}
+
+提案手法の有効性を検証するため，以下の比較手法を用いる．
+
+\subsection{Non-adaptive TD-MPC2}
+\label{subsec:baseline_nonadaptive}
+
+推定器を用いず，標準の TD-MPC2 により制御を行う．未知環境における性能劣化の基準線として用いる．
+
+\subsection{Domain Randomization}
+\label{subsec:baseline_dr}
+
+DR 訓練環境で学習したモデルを，Fixed / Dynamic 環境で評価する．頑健化戦略との比較対象とする．
+
+\subsection{Oracle TD-MPC2}
+\label{subsec:baseline_oracle}
+
+真の物理パラメータを制御器に与えた TD-MPC2 を用いる．達成可能な上限性能を示す参照点として用いる．
+
+
+\section{評価指標}
+\label{sec:metrics}
+
+\subsection{報酬性能}
+\label{subsec:metric_reward}
+
+制御性能の評価にはエピソード累積報酬を用いる．報告値として，外れ値に頑健な統計量である Interquartile Mean（IQM）を用いる．必要に応じて，中央値および分位点も併記する（詳細は結果章で示す）．
+
+\subsection{推定精度}
+\label{subsec:metric_estimation}
+
+推定器の性能は，真の物理パラメータ $\mathbf{c}_{\mathrm{phys}}$ と推定値 $\hat{\mathbf{c}}_{\mathrm{phys}}$ の平均二乗誤差（MSE）により評価する．
+\begin{align}
+\mathrm{MSE}
+=
+\mathbb{E}\left[
+\left\|
+\hat{\mathbf{c}}_{\mathrm{phys}} - \mathbf{c}_{\mathrm{phys}}
+\right\|^2
+\right].
+\end{align}
+
+\subsection{Optimality Gap}
+\label{subsec:metric_gap}
+
+提案手法が上限性能にどの程度近づいたかを評価するため，Oracle TD-MPC2 との差を Optimality Gap として定量化する．具体的には，評価条件ごとの累積報酬に対して，Oracle の値との差分を計測する．詳細な定義と集計は結果章で示す．
