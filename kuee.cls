@@ -529,34 +529,36 @@
       \global\let\thechapter\kuee@theappendix
     \fi}
 
-\def\figure{%
-    \kuee@store{figure}
-    \refstepcounter{figure}
-    \edef\kuee@envname{\@currenvir}%
-    \def\kuee@externalenvname{figure*}%
-    \kuee@condopen%
-    \kuee@iwrite{\string\begin{figure*}}%
-    \def\@currenvir{kuee@float}%
-    \begingroup%
-    \let\do\kuee@makeinnocent \dospecials%
-    \kuee@makeinnocent\^^L% and whatever other special cases
-    \endlinechar`\^^M \catcode`\^^M=12
-    \kuee@setup
-    \kuee@xfloat}%
-\def\table{%
-    \kuee@store{table}
-    \refstepcounter{table}
-    \edef\kuee@envname{\@currenvir}%
-    \def\kuee@externalenvname{table*}%
-    \kuee@condopen%
-    \kuee@iwrite{\string\begin{table*}}%
-    \def\@currenvir{kuee@float}%
-    \begingroup
-    \let\do\kuee@makeinnocent \dospecials
-    \kuee@makeinnocent\^^L% and whatever other special cases
-    \endlinechar`\^^M \catcode`\^^M=12
-    \kuee@setup
-    \kuee@xfloat}
+%\def\figure{%
+%    \kuee@store{figure}
+%    \refstepcounter{figure}
+%    \edef\kuee@envname{\@currenvir}%
+%    \def\kuee@externalenvname{figure*}%
+%    \kuee@condopen%
+%    \kuee@iwrite{\string\begin{figure*}}%
+%    \def\@currenvir{kuee@float}%
+%    \begingroup%
+%    \let\do\kuee@makeinnocent \dospecials%
+%    \kuee@makeinnocent\^^L% and whatever other special cases
+%    \endlinechar`\^^M \catcode`\^^M=12
+%    \kuee@setup
+%    \kuee@xfloat}%
+%\def\table{%
+%    \kuee@store{table}
+%    \refstepcounter{table}
+%    \edef\kuee@envname{\@currenvir}%
+%    \def\kuee@externalenvname{table*}%
+%    \kuee@condopen%
+%    \kuee@iwrite{\string\begin{table*}}%
+%    \def\@currenvir{kuee@float}%
+%    \begingroup
+%    \let\do\kuee@makeinnocent \dospecials
+%    \kuee@makeinnocent\^^L% and whatever other special cases
+%    \endlinechar`\^^M \catcode`\^^M=12
+%    \kuee@setup
+%    \kuee@xfloat}
+\let\figure\kuee@figure
+\let\table\kuee@table
 \def\kuee@foundend#1{\def\next{\endgroup\end{kuee@float}%
     \kuee@iwrite{\string\end{#1}}%
     \kuee@iwrite{\string\kueeseparator}%
@@ -610,10 +612,10 @@
      %\markboth{\uppercase{\figuresection}}{\uppercase{\figuresection}}
      \@input{\jobname.fff}
    \fi}}
-\AtEndDocument{
-   \message{AED kuee: Processing end Figures and Tables}
-   \onecolumn
-   \processdelayedfloats }
+%\AtEndDocument{
+%   \message{AED kuee: Processing end Figures and Tables}
+%   \onecolumn
+%   \processdelayedfloats }
 
 
 %%% 従来の kueethesis.sty との後方互換性を保つためのコマンド
