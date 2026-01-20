@@ -13,7 +13,7 @@
 \item \textbf{H1}: 提案手法は，静的な未知環境において，Non-adaptive TD-MPC2 と比較して性能劣化を抑制できる．
 \item \textbf{H2}: 提案手法は，真の物理パラメータを与えた Oracle TD-MPC2 に近い性能を示す．
 \item \textbf{H3}: 提案手法は，Domain Randomization と比較して，評価時の固定パラメータ環境におけるゼロショット汎化性能が高い，または同等の性能をより非保守的に達成する．
-\item \textbf{H4}: 提案手法は，エピソード内で物理パラメータが変化する動的環境においても，変化に追従する挙動を示す（拡張仮説）．
+\item \textbf{H4}: 提案手法は，エピソード内で物理パラメータが変化する動的環境においても，変化に追従する挙動を示す．
 \end{itemize}
 
 
@@ -41,12 +41,10 @@
 \label{tab:task_protocol}
 \begin{tabular}{lccc}
 \toprule
-\textbf{Task} & \textbf{Train steps} & \textbf{\#Seeds} & \textbf{Eval episodes / condition} \\
+\textbf{Task} & \textbf{Train steps} & \textbf{Seeds}\\
 \midrule
-Pendulum-Swingup & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
-Walker-Walk (Mass) & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
-Walker-Walk (Actuator) & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
-Walker-Walk (Actuator Dynamic) & \texttt{(fill)} & \texttt{(fill)} & \texttt{(fill)} \\
+Pendulum-Swingup & \texttt{(50000)} & \texttt{(5)} \\
+Walker-Walk  & \texttt{(100000)} & \texttt{(5)}  \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -195,7 +193,6 @@ Domain Randomization（DR）では，エピソードごとに物理パラメー�
 \toprule
 \textbf{Task} & \textbf{Parameter} & \textbf{Range (per episode)} \\
 \midrule
-Walker-Walk (Mass) & torso mass & $0.5$--$2.5 \times$ default \\
 Walker-Walk (Actuator) & actuator gear scale & $0.4$--$1.4 \times$ default \\
 Pendulum-Swingup & pendulum mass & $0.5$--$2.5$ kg \\
 \bottomrule
@@ -210,7 +207,7 @@ Pendulum-Swingup & pendulum mass & $0.5$--$2.5$ kg \\
 \subsection{動的環境（拡張評価）}
 \label{subsec:dynamic_eval}
 
-実環境では，バッテリー消耗や摩耗などにより，物理パラメータがエピソード内で時間変化する場合がある．そこで拡張評価として，Walker-Walk において actuator gear scale がエピソード内で線形に減衰する動的環境（\texttt{walker-walk\_actuator\_dynamic}）を用意する．本評価は，第\ref{chap:method}章の前提（エピソード内でほぼ一定）を厳密に満たさない状況での挙動観察を目的とし，結果章では補助的な分析として扱う．
+実環境では，バッテリー消耗や摩耗などにより，物理パラメータがエピソード内で時間変化する場合がある．そこで，Walker-Walk において actuator gear scale がエピソード内で線形に減衰する動的環境を用意する．本評価は，エピソード内でほぼ一定の物理環境を厳密に満たさない状況での挙動観察を目的とし，結果章では補助的な分析として扱う．
 
 
 \section{比較手法}
@@ -240,7 +237,7 @@ DR 訓練環境で学習したモデルを，Fixed / Dynamic 環境で評価す�
 \subsection{報酬性能}
 \label{subsec:metric_reward}
 
-制御性能の評価にはエピソード累積報酬を用いる．報告値として，外れ値に頑健な統計量である Interquartile Mean（IQM）を用いる．必要に応じて，中央値および分位点も併記する（詳細は結果章で示す）．
+制御性能の評価にはエピソード累積報酬を用いる．報告値として，外れ値に頑健な統計量である Interquartile Mean（IQM）を用いる\cite{agarwal2021deep}．必要に応じて，中央値および分位点も併記する（詳細は結果章で示す）．
 
 \subsection{推定精度}
 \label{subsec:metric_estimation}
@@ -255,8 +252,3 @@ DR 訓練環境で学習したモデルを，Fixed / Dynamic 環境で評価す�
 \right\|^2
 \right].
 \end{align}
-
-\subsection{Optimality Gap}
-\label{subsec:metric_gap}
-
-提案手法が上限性能にどの程度近づいたかを評価するため，Oracle TD-MPC2 との差を Optimality Gap として定量化する．具体的には，評価条件ごとの累積報酬に対して，Oracle の値との差分を計測する．詳細な定義と集計は結果章で示す．
