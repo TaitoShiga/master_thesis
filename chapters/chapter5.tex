@@ -65,7 +65,7 @@ Walker-Walk  & \texttt{(100000)} & \texttt{(5)}  \\
 \subsubsection{Walker-Walk タスク（基本設定）}
 \label{subsubsec:walker_base}
 
-Walker-Walk は，二次元平面上において二足歩行ロボットを前進歩行させる連続制御タスクである．ロボットは胴体（torso）および左右の股関節・膝関節・足首関節から構成され，動的バランスを維持しながら前進することが求められる．本研究では DMControl の \texttt{walker-walk} を用いる\cite{tassa2020dmcontrol}．環境設定を表\ref{tab:walker_env}に示す．
+Walker-Walk は，二次元平面上において二足歩行ロボットを前進歩行させる連続制御タスクである．ロボットは胴体（torso）および左右の股関節・膝関節・足首関節から構成され，動的バランスを維持しながら前進することが求められる．本研究では DMControl の \texttt{walker-walk} を用いる\cite{tassa2018deepmindcontrolsuite}．環境設定を表\ref{tab:walker_env}に示す．
 
 \begin{table}[t]
 \centering
@@ -141,7 +141,7 @@ r_{\mathrm{move}}
 \subsubsection{Pendulum-Swingup タスク}
 \label{subsubsec:pendulum}
 
-Pendulum-Swingup は，倒立振子を下向き初期状態から振り上げ，上向き姿勢を維持する連続制御タスクである．本研究では DMControl の \texttt{pendulum-swingup} を用いる\cite{tassa2020dmcontrol}．環境設定を表\ref{tab:pendulum_env}に示す．
+Pendulum-Swingup は，倒立振子を下向き初期状態から振り上げ，上向き姿勢を維持する連続制御タスクである．本研究では DMControl の \texttt{pendulum-swingup} を用いる\cite{tassa2018deepmindcontrolsuite}．環境設定を表\ref{tab:pendulum_env}に示す．
 
 \begin{table}[t]
 \centering
@@ -199,12 +199,12 @@ Pendulum-Swingup & pendulum mass & $0.5$--$2.5$ kg \\
 \end{tabular}
 \end{table}
 
-\subsection{Zero-shot 汎化評価（固定パラメータ環境）}
+\subsection{静的環境評価}
 \label{subsec:fixed_eval}
 
 学習済みモデルのゼロショット汎化性能を評価するため，物理パラメータを固定した評価環境を複数用意する．例として，Walker-Walk（質量）では torso 質量をスケールした複数条件を用意し，in-distribution（DR 範囲内）と out-of-distribution（範囲外）で性能を比較する．評価条件の一覧は Appendix（表\ref{tab:fixed_conditions}）にまとめる．
 
-\subsection{動的環境（拡張評価）}
+\subsection{動的環境評価}
 \label{subsec:dynamic_eval}
 
 実環境では，バッテリー消耗や摩耗などにより，物理パラメータがエピソード内で時間変化する場合がある．そこで，Walker-Walk において actuator gear scale がエピソード内で線形に減衰する動的環境を用意する．本評価は，エピソード内でほぼ一定の物理環境を厳密に満たさない状況での挙動観察を目的とし，結果章では補助的な分析として扱う．
@@ -234,21 +234,4 @@ DR 訓練環境で学習したモデルを，Fixed / Dynamic 環境で評価す�
 \section{評価指標}
 \label{sec:metrics}
 
-\subsection{報酬性能}
-\label{subsec:metric_reward}
-
 制御性能の評価にはエピソード累積報酬を用いる．報告値として，外れ値に頑健な統計量である Interquartile Mean（IQM）を用いる\cite{agarwal2021deep}．必要に応じて，中央値および分位点も併記する（詳細は結果章で示す）．
-
-\subsection{推定精度}
-\label{subsec:metric_estimation}
-
-推定器の性能は，真の物理パラメータ $\mathbf{c}_{\mathrm{phys}}$ と推定値 $\hat{\mathbf{c}}_{\mathrm{phys}}$ の平均二乗誤差（MSE）により評価する．
-\begin{align}
-\mathrm{MSE}
-=
-\mathbb{E}\left[
-\left\|
-\hat{\mathbf{c}}_{\mathrm{phys}} - \mathbf{c}_{\mathrm{phys}}
-\right\|^2
-\right].
-\end{align}

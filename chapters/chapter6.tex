@@ -1,0 +1,99 @@
+\chapter{実験結果}
+\label{chap:results}
+
+本章では，第\ref{chap:experiment}章で述べた実験設定に基づき，提案手法の有効性を検証した結果を示す．本章では実験結果のみを記述し，結果の解釈および考察は次章に譲る．
+
+
+\section{物理パラメータ摂動に対する性能評価}
+\label{sec:perturbation_performance}
+
+本節では，物理パラメータを変化させた環境において，提案手法および比較手法の制御性能を評価した結果を示す．評価は，学習後のモデルを用いたゼロショット汎化性能として測定し，エピソード累積報酬により評価する．
+
+
+\subsection{複数タスクにおける摂動評価}
+\label{subsec:multi_task_performance}
+
+図\ref{fig:performance_curves}に，複数のタスクおよび物理パラメータ条件における各手法の性能を示す．各サブプロットは異なるタスクまたは摂動条件を表し，横軸は物理パラメータの値，縦軸はエピソード累積報酬を表す．
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/performance_curves.png}
+\caption{複数タスクにおける物理パラメータ摂動に対する性能評価}
+\label{fig:performance_curves}
+\end{figure}
+
+図\ref{fig:performance_curves}より，提案手法（Adaptive TD-MPC2）は，複数のタスクおよび物理パラメータ条件において，Non-adaptive TD-MPC2 および Domain Randomization と比較して高い性能を示している．特に，Domain Randomization の訓練範囲外（out-of-distribution）の条件においても，性能劣化が抑制されていることが確認できる．
+
+また，Oracle TD-MPC2（真の物理パラメータを与えた場合）に近い性能を達成しており，推定器による適応的計画が有効に機能していることが示される．
+
+
+\subsection{Pendulum-Swingup における質量摂動評価}
+\label{subsec:pendulum_performance}
+
+Pendulum-Swingup タスクにおいて，振子の質量を変化させた環境での性能評価結果を図\ref{fig:pendulum_estimation_convergence}に示す．
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/pendulum_estimation_convergence.png}
+\caption{Pendulum-Swingup における質量摂動に対する性能評価}
+\label{fig:pendulum_estimation_convergence}
+\end{figure}
+
+図\ref{fig:pendulum_estimation_convergence}より，提案手法は質量パラメータの広範な範囲において安定した性能を示している．Non-adaptive TD-MPC2 は特定の質量条件下で性能が低下するのに対し，提案手法は適応的計画により性能を維持していることが確認できる．
+
+
+\subsection{Walker-Walk におけるアクチュエータ摂動評価}
+\label{subsec:walker_actuator_performance}
+
+Walker-Walk タスクにおいて，アクチュエータの出力スケールを変化させた環境での性能評価結果を示す．
+
+\subsubsection{エピソード内での適応挙動}
+\label{subsubsec:walker_estimation_convergence}
+
+図\ref{fig:walker_estimation_convergence}に，エピソード内での各手法の適応挙動を示す．
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.85\linewidth]{figures/walker_estimation_convergence.png}
+\caption{Walker-Walk におけるエピソード内での適応挙動}
+\label{fig:walker_estimation_convergence}
+\end{figure}
+
+図\ref{fig:walker_estimation_convergence}より，提案手法はエピソード内で相互作用が進むにつれて性能が向上する傾向が見られる．これに対し，Non-adaptive TD-MPC2 は一定の性能に留まっており，推定に基づく適応的計画の効果が示唆される．
+
+
+\subsubsection{アクチュエータスケール変化に対する性能}
+\label{subsubsec:walker_actuator_scale}
+
+図\ref{fig:walker_actuator_performance}に，異なる actuator gear scale 条件下での各手法の性能を示す．横軸は actuator gear scale の値，縦軸はエピソード累積報酬を表す．
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/walker_actuator_performance_curves.png}
+\caption{Walker-Walk における actuator gear scale 変化に対する性能評価}
+\label{fig:walker_actuator_performance}
+\end{figure}
+
+図\ref{fig:walker_actuator_performance}より，提案手法は Domain Randomization の訓練範囲（\(0.4\)--\(1.4\) 倍）内外において，Non-adaptive TD-MPC2 よりも高い性能を示している．特に，範囲外の条件においても性能劣化が抑制されており，推定に基づく適応的計画が有効に機能していることが確認できる．
+
+また，提案手法は Oracle TD-MPC2 に近い性能を達成しており，物理パラメータの明示的同定が制御性能の向上に寄与していることが示される．一方，Domain Randomization は訓練範囲内では頑健性を示すものの，範囲外では性能が低下する傾向が見られる．
+
+
+\section{結果のまとめ}
+\label{sec:results_summary}
+
+本章で示した実験結果を以下にまとめる．
+
+\paragraph{摂動評価における性能}
+
+Pendulum-Swingup および Walker-Walk の両タスクにおいて，提案手法（Adaptive TD-MPC2）は，物理パラメータの広範な摂動条件下で安定した性能を示した．特に，Domain Randomization の訓練範囲外（out-of-distribution）においても，Non-adaptive TD-MPC2 と比較して性能劣化が抑制されていることが確認された．
+
+
+\paragraph{比較手法との関係}
+
+Non-adaptive TD-MPC2 は未知環境において性能劣化を示し，Domain Randomization は訓練範囲内では頑健性を示すものの範囲外での性能低下が見られた．これに対し，提案手法は Oracle TD-MPC2（真の物理パラメータを与えた場合）に近い性能を達成しており，推定に基づく適応的計画が有効に機能していることが示された．
+
+
+\paragraph{エピソード内での適応}
+
+Walker-Walk タスクにおいて，提案手法はエピソード内で相互作用が進むにつれて性能が向上する傾向が確認された．これは，相互作用履歴から物理パラメータを推定し，計画に反映することで適応的な制御が実現されていることを示唆する．

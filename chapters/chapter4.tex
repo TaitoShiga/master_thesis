@@ -110,12 +110,19 @@ TD-MPC2 では，
 \subsection{全体アーキテクチャ}
 \label{subsec:overall_architecture}
 
-提案手法の全体アーキテクチャを図に示す．
+提案手法の全体アーキテクチャを図\ref{fig:architecture}に示す．
 本手法は，
 大きく分けて
 (i) 物理パラメータ推定モジュールと，
 (ii) 条件付きモデル予測制御モジュール
 の二つから構成される．
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/architecture.png}
+\caption{提案手法の全体アーキテクチャ}
+\label{fig:architecture}
+\end{figure}
 
 制御器の中核には，
 第\ref{chap:preliminary}章で述べた TD-MPC2 をそのまま用いる．
