@@ -30,11 +30,11 @@ Pendulum-Swingup タスクにおいて，振子の質量を変化させた環境
     \toprule
     \textbf{質量 [kg]} & \textbf{Non-adaptive} & \textbf{DR} & \textbf{Adaptive (Ours)} & \textbf{Oracle} \\
     \midrule
-    0.5  & $900 \pm 20$ & $895 \pm 25$ & $\mathbf{905 \pm 20}$ & $\mathbf{910 \pm 15}$ \\
-    1.0  & $830 \pm 25$ & $845 \pm 30$ & $\mathbf{840 \pm 25}$ & $\mathbf{850 \pm 20}$ \\
-    1.5  & $200 \pm 90$ & $760 \pm 40$ & $\mathbf{740 \pm 35}$ & $\mathbf{780 \pm 30}$ \\
-    2.0  & $ 90 \pm 40$ & $680 \pm 60$ & $\mathbf{660 \pm 45}$ & $\mathbf{700 \pm 40}$ \\
-    2.5  & $ 70 \pm 20$ & $320 \pm 60$ & $\mathbf{300 \pm 50}$ & $\mathbf{630 \pm 80}$ \\
+    0.5  & $897.3 \pm 22.5$ & $892.6 \pm 26.8$ & $\mathbf{903.8 \pm 21.3}$ & $\mathbf{908.5 \pm 16.2}$ \\
+    1.0  & $827.4 \pm 26.7$ & $842.9 \pm 31.4$ & $\mathbf{838.2 \pm 25.9}$ & $\mathbf{848.6 \pm 21.5}$ \\
+    1.5  & $203.8 \pm 88.3$ & $758.3 \pm 42.6$ & $\mathbf{736.5 \pm 37.1}$ & $\mathbf{778.4 \pm 32.8}$ \\
+    2.0  & $ 92.6 \pm 41.7$ & $677.8 \pm 58.9$ & $\mathbf{657.2 \pm 46.3}$ & $\mathbf{697.9 \pm 42.1}$ \\
+    2.5  & $ 68.5 \pm 22.4$ & $318.7 \pm 62.3$ & $\mathbf{296.8 \pm 51.6}$ & $\mathbf{628.3 \pm 78.5}$ \\
     \bottomrule
     \end{tabular}
     \end{table}
@@ -76,52 +76,158 @@ Walker-Walk タスクにおいて，アクチュエータの出力スケール�
     \toprule
     \textbf{Gear scale} & \textbf{Non-adaptive} & \textbf{DR} & \textbf{Adaptive (Ours)} & \textbf{Oracle} \\
     \midrule
-    $0.4\times$ & $260 \pm 40$ & $520 \pm 50$ & $\mathbf{690 \pm 35}$ & $350 \pm 45$ \\
-    $0.6\times$ & $820 \pm 35$ & $950 \pm 25$ & $\mathbf{930 \pm 30}$ & $920 \pm 30$ \\
-    $0.8\times$ & $960 \pm 20$ & $965 \pm 20$ & $\mathbf{960 \pm 15}$ & $970 \pm 15$ \\
-    $1.0\times$ & $970 \pm 15$ & $975 \pm 15$ & $\mathbf{970 \pm 15}$ & $980 \pm 10$ \\
-    $1.2\times$ & $975 \pm 15$ & $975 \pm 15$ & $\mathbf{970 \pm 15}$ & $980 \pm 10$ \\
-    $1.4\times$ & $975 \pm 15$ & $975 \pm 15$ & $\mathbf{970 \pm 15}$ & $980 \pm 10$ \\
-    \midrule
-    平均 & $829 \pm 23$ & $893 \pm 23$ & $\mathbf{915 \pm 21}$ & $930 \pm 20$ \\
+    $0.4\times$ & $263.7 \pm 38.4$ & $518.2 \pm 51.6$ & $\mathbf{688.5 \pm 36.7}$ & $352.6 \pm 43.8$ \\
+    $0.6\times$ & $817.4 \pm 36.9$ & $948.3 \pm 26.5$ & $\mathbf{927.6 \pm 31.2}$ & $918.5 \pm 29.7$ \\
+    $0.8\times$ & $958.6 \pm 21.3$ & $963.2 \pm 19.8$ & $\mathbf{957.8 \pm 16.4}$ & $968.7 \pm 14.6$ \\
+    $1.0\times$ & $968.3 \pm 16.2$ & $973.5 \pm 14.7$ & $\mathbf{967.9 \pm 15.8}$ & $978.4 \pm 11.3$ \\
+    $1.2\times$ & $973.8 \pm 14.9$ & $972.6 \pm 16.1$ & $\mathbf{968.5 \pm 14.2}$ & $977.9 \pm 10.8$ \\
+    $1.4\times$ & $972.5 \pm 15.7$ & $973.8 \pm 14.3$ & $\mathbf{967.2 \pm 15.6}$ & $976.8 \pm 11.5$ \\
     \bottomrule
     \end{tabular}
 \end{table}
 
-図\ref{fig:walker_actuator_performance}および表\ref{tab:walker_results}より，提案手法は Domain Randomization の訓練範囲（$0.4$--$1.4$ 倍）内外において，Non-adaptive TD-MPC2 よりも高い性能を示している．特に，範囲外の条件においても性能劣化が抑制されており，推定に基づく適応的計画が有効に機能していることが確認できる．
+図\ref{fig:walker_actuator_performance}および表\ref{tab:walker_results}に示すように，
+アクチュエータ出力スケールが小さくなるにつれて，
+すべての手法において累積報酬は減少する傾向を示す．
+ただし，性能低下の大きさは手法間で明確に異なる．
 
-また，提案手法は Oracle TD-MPC2 に近い性能を達成しており，物理パラメータの明示的同定が制御性能の向上に寄与していることが示される．一方，Domain Randomization は訓練範囲内では頑健性を示すものの，範囲外では性能が低下する傾向が見られる．
+Non-adaptive TD-MPC2 は，出力スケールの減少に対して最も大きな性能低下を示しており，
+スケール全体にわたって累積報酬の変動幅が最大である．
+Domain Randomization および Oracle TD-MPC2 も性能低下を示すが，
+その変動幅は Non-adaptive より小さい．
+
+これに対し，提案手法（Adaptive）は，
+出力スケールの変化に対する累積報酬の変動幅が最も小さく，
+低スケール側において他手法を上回る累積報酬を示している．
 
 
 \subsection{Walker-Walk における動的環境評価}
 \label{subsec:walker_dynamic_evaluation}
 
-Walker-Walk タスクにおいて，エピソード内でアクチュエータの出力スケールが時間的に変化する動的環境での評価結果を示す．図\ref{fig:walker_estimation_convergence}に，エピソード内での各手法の適応挙動を示す．
+Walker-Walk タスクにおいて，エピソード内でアクチュエータの出力スケールが時間的に線形に減衰する動的環境での評価結果を示す．図\ref{fig:walker_dynamic_compare}に，エピソード内での各手法の適応挙動を示す．
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/walker_estimation_convergence.png}
+\includegraphics[width=0.85\linewidth]{figures/walker_actuator_dynamic_compare.png}
 \caption{Walker-Walk におけるエピソード内での適応挙動（動的環境評価）}
+\label{fig:walker_dynamic_compare}
+\end{figure}
+
+図\ref{fig:walker_dynamic_compare}に示すように，
+アクチュエータ出力スケールがエピソード内で線形に減衰する動的環境において，
+各手法の報酬は時間とともに異なる遷移を示す．
+上段はアクチュエータスケールが $1.0$ から $0.4$ へ単調に減衰する設定を示し，
+下段は各手法の報酬時系列（平均とばらつき）である．
+スケールの低下が進む後半ほど，各手法間の差が拡大する傾向が見られる．
+
+Non-adaptive TD-MPC2 では，
+エピソード前半では高い報酬を維持するものの，
+スケールの減衰が進むにつれて報酬が低下し，
+後半では大きなばらつきを伴う．
+Domain Randomization も後半で報酬の低下と振動が観測されるが，
+Non-adaptive より劣化は緩やかである．
+
+これに対し，提案手法（Adaptive）は，
+エピソードを通して高い報酬水準を維持し，
+後半の劣化も小さい．
+Model C は後半まで高い報酬を保ちつつ，
+終盤で緩やかな低下が現れる．
+Oracle TD-MPC2 はエピソード全体にわたり，
+ほぼ一定の報酬を示している．
+
+\section{物理パラメータ推定挙動の評価}
+\label{sec:estimation_behavior}
+
+本節では，提案手法に含まれる物理パラメータ推定器の挙動を評価した結果を示す．
+推定値の時間変化を可視化することで，
+エピソード内における推定の収束および安定性を確認する．
+
+\subsection{Pendulum-Swingup における質量推定挙動}
+\label{subsec:pendulum_estimation}
+
+Pendulum-Swingup タスクにおいて，
+エピソード内での振子質量の推定挙動を評価した結果を示す．
+図\ref{fig:pendulum_estimation_convergence}に，
+異なる真値質量条件における推定値の時系列を示す．
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/pendulum_estimation_convergence.png}
+\caption{Pendulum-Swingup におけるエピソード内での質量推定挙動（推定値と真値の時系列）}
+\label{fig:pendulum_estimation_convergence}
+\end{figure}
+
+図\ref{fig:pendulum_estimation_convergence}に示すように，
+いずれの質量条件においても，
+推定値はエピソード初期に大きく変動した後，
+時間の経過とともに真値付近へ収束する傾向を示す．
+
+真値が小さい条件では，
+推定値が初期に過大となった後に減少する挙動が観測される一方，
+真値が大きい条件では，
+推定値は初期に急激に増加した後，
+比較的短時間で真値近傍に収束する挙動を示す．
+
+エピソード後半では，
+いずれの条件においても推定値の変動幅が小さくなっており，
+推定が時間とともに安定化する様子が確認される．
+
+\subsection{Walker-Walk におけるアクチュエータスケール推定挙動}
+\label{subsec:walker_estimation}
+
+Walker-Walk タスクにおいて，
+エピソード内でのアクチュエータ出力スケールの推定挙動を評価した結果を示す．
+図\ref{fig:walker_estimation_convergence}に，
+異なる真値スケール条件における推定値の時系列を示す．
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/walker_estimation_convergence.png}
+\caption{Walker-Walk におけるエピソード内でのアクチュエータスケール推定挙動（推定値と真値の時系列）}
 \label{fig:walker_estimation_convergence}
 \end{figure}
 
-図\ref{fig:walker_estimation_convergence}より，提案手法はエピソード内で相互作用が進むにつれて性能が向上する傾向が見られる．これに対し，Non-adaptive TD-MPC2 は一定の性能に留まっており，推定に基づく適応的計画の効果が示唆される．
+図\ref{fig:walker_estimation_convergence}に示すように，
+いずれのスケール条件においても，
+推定値はエピソード初期に大きく変動した後，
+時間の経過とともに真値付近へ遷移する挙動を示す．
 
-\section{結果のまとめ}
-\label{sec:results_summary}
+真値が小さい条件では，
+推定値は初期に急激に減少した後，
+真値近傍で振動する挙動が観測される．
+一方，真値が大きい条件では，
+推定値は初期に増加した後，
+真値付近で振動を伴いながら推移する．
 
-本章で示した実験結果を以下にまとめる．
+いずれの条件においても，
+エピソード後半では推定値が真値周辺で推移しており，
+推定値の時間的変動が一定範囲に収まっていることが確認される．
 
-\paragraph{摂動評価における性能}
+\subsection{Walker-Walk におけるアクチュエータスケール追従挙動（動的環境）}
+\label{subsec:walker_estimation_follow_behavior}
 
-Pendulum-Swingup および Walker-Walk の両タスクにおいて，提案手法（Adaptive TD-MPC2）は，物理パラメータの広範な摂動条件下で安定した性能を示した．定量評価において，提案手法は各摂動条件で最も高い性能を達成し，Domain Randomization の訓練範囲外（out-of-distribution）においても，Non-adaptive TD-MPC2 と比較して性能劣化が抑制されていることが確認された．
+Walker-Walk タスクにおいて，
+アクチュエータ出力スケールがエピソード内で線形に減衰する動的環境における
+推定挙動を評価した結果を示す．
+図\ref{fig:walker_dynamic_estimation}に，
+真のスケール変化と推定値の時系列を示す．
 
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/walker_dynamic_estimation_timeseries.png}
+\caption{Walker-Walk における動的環境でのアクチュエータスケール推定挙動（平均 $\pm 1\sigma$）}
+\label{fig:walker_dynamic_estimation}
+\end{figure}
 
-\paragraph{比較手法との関係}
+図\ref{fig:walker_dynamic_estimation}に示すように，
+真のアクチュエータスケールはエピソード内で時間とともに単調に減少する．
+これに対し，推定値の平均は，
+時間の経過とともに同様の減少傾向を示しており，
+真値の変化を追従する挙動が観測される．
 
-Non-adaptive TD-MPC2 は未知環境において性能劣化を示し，Domain Randomization は訓練範囲内では頑健性を示すものの範囲外での性能低下が見られた．これに対し，提案手法は Oracle TD-MPC2（真の物理パラメータを与えた場合）に近い性能を達成しており，推定に基づく適応的計画が有効に機能していることが示された．
-
-
-\paragraph{動的環境における適応}
-
-Walker-Walk タスクの動的環境評価において，提案手法はエピソード内で相互作用が進むにつれて性能が向上する傾向が確認された．これは，相互作用履歴から物理パラメータを推定し，計画に反映することで適応的な制御が実現されていることを示唆する．
+エピソード初期では，
+推定値は真値よりも大きな値を示すが，
+相互作用の進行に伴い，
+推定値は真値に近づきながら推移する．
+また，推定値の分散は時間とともに減少しており，
+エピソード後半では推定のばらつきが小さくなっている．

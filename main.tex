@@ -28,6 +28,25 @@
 \begin{document}
 \maketitle
 
+\begin{abstract}
+モデルベース強化学習は，環境の遷移ダイナミクスを学習し，
+その予測に基づいて行動を計画することで高いサンプル効率を実現する．
+しかし，学習時に想定された物理パラメータから実行時の環境が乖離した場合，
+世界モデルの予測精度が低下し，計画の信頼性が損なわれるという課題がある．
+本研究では，物理パラメータが未知な環境において，
+過去の相互作用履歴から環境特性を明示的に推定し，
+その推定結果を世界モデルおよび計画過程に条件として与えることで，
+環境変動下でも整合的な将来予測を実現する適応的制御手法を提案する．
+提案手法では，推定モジュールと制御モジュールを概念的に分離し，
+勾配を遮断することで学習の安定性を確保する．
+Pendulum-Swingup および Walker-Walk タスクを用いた実験により，
+提案手法は高次元タスクにおいて既存手法を上回る性能を達成し，
+動的環境においても変化に追従することを確認した．
+また，真の物理パラメータを与えた Oracle 条件が
+環境変動下でも高い性能を維持することを実証し，
+物理パラメータの明示的な推定が計画の信頼性向上に寄与することを示した．
+\end{abstract}
+
 \begin{eabstract}
 % English abstract here
 \end{eabstract}
@@ -41,6 +60,8 @@
 \input{chapters/chapter4}
 \input{chapters/chapter5}
 \input{chapters/chapter6}
+\input{chapters/chapter7}
+\input{chapters/chapter8}
 
 \begin{acknowledgements}
 % 謝辞
