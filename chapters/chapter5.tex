@@ -62,6 +62,43 @@ Walker-Walk  & \texttt{(100000)} & \texttt{(5)}  \\
 \subsection{評価タスク}
 \label{subsec:evaluation_tasks}
 
+\subsubsection{Pendulum-Swingup タスク}
+\label{subsubsec:pendulum}
+
+Pendulum-Swingup は，倒立振子を下向き初期状態から振り上げ，上向き姿勢を維持する連続制御タスクである．本研究では DMControl の \texttt{pendulum-swingup} を用いる\cite{tassa2018deepmindcontrolsuite}．環境設定を表\ref{tab:pendulum_env}に示す．
+
+\begin{table}[t]
+\centering
+\caption{Pendulum-Swingup タスクの環境設定}
+\label{tab:pendulum_env}
+\begin{tabular}{lc}
+\toprule
+\textbf{項目} & \textbf{値} \\
+\midrule
+Task name & \texttt{pendulum-swingup} \\
+Control period & 0.02 s（50 Hz） \\
+Episode length & 500 steps（action repeat=2 を含む） \\
+Termination & Timeout のみ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{観測空間と行動空間}
+
+観測は角度の $\cos,\sin$ および角速度から構成され，$\mathbf{o}_t \in \mathbb{R}^3$ である．行動は振子軸のトルクであり，$\mathbf{a}_t \in [-1,1]$ の 1 次元連続値である．
+
+\paragraph{報酬関数}
+
+Pendulum-Swingup の報酬は，上向き姿勢（$\theta=0$）に近いほど高くなるよう設計されている．報酬は次式で与えられる．
+\begin{align}
+r_t
+=
+\mathrm{tol}(d_t; 0, 0),
+\label{eq:pendulum_reward}
+\end{align}
+ただし $d_t$ は上向き位置からの角度距離を表す．DMControl の実装では，$d_t$ に対して cosine 形状の滑らかな tolerance が適用されるため，上向き（$d_t=0$）で $r_t=1$，下向き（$d_t \approx \pi$）で $r_t \approx 0$ となる．本研究では制御コスト項は含めない（DMControl 準拠）．
+
+
 \subsubsection{Walker-Walk タスク（基本設定）}
 \label{subsubsec:walker_base}
 
@@ -136,43 +173,6 @@ r_{\mathrm{move}}
 \mathrm{tol}(v_t; 1.0, \infty),
 \end{align}
 と定義する．ここで $\mathrm{tol}(\cdot)$ は DMControl における滑らかな tolerance 関数であり，指定した境界内では 1 をとり，境界から離れるほど連続的に 0 へ減衰する．本研究では，報酬定義を DMControl の実装に準拠する．
-
-
-\subsubsection{Pendulum-Swingup タスク}
-\label{subsubsec:pendulum}
-
-Pendulum-Swingup は，倒立振子を下向き初期状態から振り上げ，上向き姿勢を維持する連続制御タスクである．本研究では DMControl の \texttt{pendulum-swingup} を用いる\cite{tassa2018deepmindcontrolsuite}．環境設定を表\ref{tab:pendulum_env}に示す．
-
-\begin{table}[t]
-\centering
-\caption{Pendulum-Swingup タスクの環境設定}
-\label{tab:pendulum_env}
-\begin{tabular}{lc}
-\toprule
-\textbf{項目} & \textbf{値} \\
-\midrule
-Task name & \texttt{pendulum-swingup} \\
-Control period & 0.02 s（50 Hz） \\
-Episode length & 500 steps（action repeat=2 を含む） \\
-Termination & Timeout のみ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{観測空間と行動空間}
-
-観測は角度の $\cos,\sin$ および角速度から構成され，$\mathbf{o}_t \in \mathbb{R}^3$ である．行動は振子軸のトルクであり，$\mathbf{a}_t \in [-1,1]$ の 1 次元連続値である．
-
-\paragraph{報酬関数}
-
-Pendulum-Swingup の報酬は，上向き姿勢（$\theta=0$）に近いほど高くなるよう設計されている．報酬は次式で与えられる．
-\begin{align}
-r_t
-=
-\mathrm{tol}(d_t; 0, 0),
-\label{eq:pendulum_reward}
-\end{align}
-ただし $d_t$ は上向き位置からの角度距離を表す．DMControl の実装では，$d_t$ に対して cosine 形状の滑らかな tolerance が適用されるため，上向き（$d_t=0$）で $r_t=1$，下向き（$d_t \approx \pi$）で $r_t \approx 0$ となる．本研究では制御コスト項は含めない（DMControl 準拠）．
 
 
 \section{物理パラメータ摂動と評価条件}
