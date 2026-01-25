@@ -16,14 +16,14 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 % ===== cover info =====
-\title{不確実環境における適応的モデルベース強化学習法}
+\title{不確実環境における\\適応的モデルベース強化学習法}
 \etitle{Adaptive Model-Based Reinforcement Learning in Uncertain Environments}
 \author{志賀 泰斗}
 \eauthor{Taito Shiga}
 \professor{石井 信 教授}
 % course/department は cls 側で修士用が既定値に切り替わりますが、
 % 表示を上書きしたいなら \course{...} \department{...} を書けます。:contentReference[oaicite:3]{index=3}
-\date{令和8年1月6日}
+\date{令和8年1月提出}
 
 \begin{document}
 \maketitle
@@ -38,12 +38,12 @@
 過去の相互作用履歴から環境特性を明示的に推定し，
 その推定結果を世界モデルおよび計画過程に条件として与えることで，
 環境変動下でも整合的な将来予測を実現する適応的制御手法を提案する．
-Pendulum-Swingup および Walker-Walk タスクを用いた実験により，
-提案手法は高次元タスクにおいて既存手法を上回る性能を達成し，
-動的環境においても変化に追従することを確認した．
-また，真の物理パラメータを与えた Oracle 条件が
-環境変動下でも高い性能を維持することを実証し，
-物理パラメータの明示的な推定が計画の信頼性向上に寄与することを示した．
+まず，真の物理パラメータを与えた Oracle 条件での検証により，
+物理パラメータの明示的な情報が計画の信頼性向上に寄与することを確認し，
+提案手法のアプローチの妥当性を示した．
+その上で，Pendulum-Swingup および Walker-Walk タスクを用いた実験により，
+提案手法が高次元タスクにおいて既存手法を上回る性能を達成し，
+動的環境においても環境変化に追従できることを実証した．
 \end{eabstract}
 
 \tableofcontents
