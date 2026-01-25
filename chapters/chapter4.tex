@@ -129,9 +129,10 @@ TD-MPC2 では，
 \begin{figure}[tb]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/architecture.png}
-\caption[提案手法の全体アーキテクチャ]{%
-\centering\textbf{提案手法の全体アーキテクチャ}\\[1ex]
-\raggedright\small
+\caption{提案手法の全体アーキテクチャ}
+\label{fig:architecture}
+\end{figure}
+
 環境から得られる観測 $\mathbf{o}_t$ は，
 まず明示的システム同定モジュールに入力され，
 過去 $K$ ステップ分の観測–行動履歴
@@ -152,9 +153,6 @@ $\hat{\mathbf{c}}_{\mathrm{phys}}$ は，
 MPPI プランナは，
 条件付き世界モデルに基づいて行動系列を評価・最適化し，
 得られた行動 $\mathbf{a}_t$ を環境に適用する．
-}
-\label{fig:architecture}
-\end{figure}
 
 制御器の中核には，
 第\ref{chap:preliminary}章で述べた TD-MPC2 をそのまま用いる．

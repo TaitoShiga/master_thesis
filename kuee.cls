@@ -25,7 +25,7 @@
 \else
   \gdef\@maintitle{修\hfil 士\hfil 論\hfil 文}
   \gdef\@course{京都大学大学院情報学研究科}
-  \gdef\@department{情報学専攻システム科学コース 令和6年度入学}
+  \gdef\@department{情報学専攻システム科学コース\\令和6年度入学}
 \fi
 
 %%%%%%%%%%%%%%
