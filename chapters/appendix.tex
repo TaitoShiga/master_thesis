@@ -4,3 +4,335 @@
 \section{Hyperparameter Settings}
 \input{tables/hyperparameters}
 \clearpage
+
+\section{Task Specifications}
+\label{sec:appendix_task_specs}
+
+本節では，第\ref{chap:experiment}章で用いた評価タスクの詳細仕様について述べる．
+
+\subsection{Pendulum-Swingup タスク仕様}
+\label{subsec:appendix_pendulum}
+
+\subsubsection{環境パラメータ}
+
+\begin{table}[h]
+\centering
+\caption{Pendulum-Swingup 環境パラメータ}
+\label{tab:appendix_pendulum_params}
+\begin{tabular}{lc}
+\toprule
+\textbf{パラメータ} & \textbf{値} \\
+\midrule
+制御周期 & 0.02 s (50 Hz) \\
+Action repeat & 2 \\
+エピソード長 & 500 steps \\
+観測次元 & 3 \\
+行動次元 & 1 \\
+\midrule
+\multicolumn{2}{l}{\textit{物理パラメータ（デフォルト）}} \\
+振子質量 & 1.0 kg \\
+関節damping & 0.001 \\
+重力加速度 & $-9.81$ m/s$^2$ \\
+タイムステップ & 0.01 s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{観測空間}
+
+観測 $\mathbf{o}_t \in \mathbb{R}^3$ は以下から構成される：
+\begin{itemize}
+\item \textbf{orientation} (2次元): 振子角度 $\theta$ の $(\cos\theta, \sin\theta)$ 表現
+\item \textbf{velocity} (1次元): 角速度 $\dot{\theta}$ [rad/s]
+\end{itemize}
+
+\subsubsection{行動空間}
+
+行動 $\mathbf{a}_t \in [-1, 1]$ は振子軸に加えるトルクを表す1次元連続値である．
+
+\subsubsection{報酬関数}
+
+時刻 $t$ における報酬 $r_t$ は，上向き位置からの角度距離 $d_t$ に基づき，
+\begin{align}
+r_t = \mathrm{tolerance}(d_t; \text{bounds}=(0, 0), \text{margin}=\pi, \text{sigmoid}=\text{`cosine'}),
+\end{align}
+と定義される．ここで，$\mathrm{tolerance}(\cdot)$ は DMControl における滑らかな許容関数であり，
+上向き位置 ($d_t=0$) で $r_t=1$，下向き位置 ($d_t \approx \pi$) で $r_t \approx 0$ となる．
+報酬範囲は $[0, 1]$ である．
+
+\subsubsection{ランダム化設定}
+
+Domain Randomization 訓練では，エピソードごとに振子質量を一様分布 $\mathcal{U}(0.5, 2.5)$ kg からサンプリングする．
+
+
+\subsection{Walker-Walk タスク仕様}
+\label{subsec:appendix_walker}
+
+\subsubsection{環境パラメータ}
+
+\begin{table}[h]
+\centering
+\caption{Walker-Walk 環境パラメータ}
+\label{tab:appendix_walker_params}
+\begin{tabular}{lc}
+\toprule
+\textbf{パラメータ} & \textbf{値} \\
+\midrule
+制御周期 & 0.025 s (40 Hz) \\
+Action repeat & 2 \\
+エピソード長 & 500 steps (25 s 相当) \\
+観測次元 & 24 \\
+行動次元 & 6 \\
+\midrule
+\multicolumn{2}{l}{\textit{物理パラメータ（デフォルト）}} \\
+Torso 質量 & 3.34 kg \\
+床摩擦係数 & [0.7, 0.1, 0.1] \\
+関節damping & 0.1 \\
+関節armature & 0.01 \\
+重力加速度 & $-9.81$ m/s$^2$ \\
+タイムステップ & 0.0025 s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{観測空間}
+
+観測 $\mathbf{o}_t \in \mathbb{R}^{24}$ は以下から構成される：
+\begin{itemize}
+\item \textbf{orientations} (14次元): 胴体および各関節の姿勢（$\sin$, $\cos$ 表現）
+\item \textbf{height} (1次元): 胴体の地面からの高さ
+\item \textbf{velocity} (9次元): 胴体の線速度・角速度，および各関節の角速度
+\end{itemize}
+
+\subsubsection{行動空間}
+
+行動 $\mathbf{a}_t \in [-1, 1]^6$ は，左右の股関節・膝関節・足首関節（hip, knee, ankle）に加えるトルクを表す6次元連続値である．
+
+\begin{table}[h]
+\centering
+\caption{Walker-Walk の行動空間}
+\label{tab:appendix_walker_action}
+\begin{tabular}{clcc}
+\toprule
+\textbf{Index} & \textbf{関節名} & \textbf{デフォルトgear} & \textbf{範囲} \\
+\midrule
+0 & right\_hip & 100 & $[-1, 1]$ \\
+1 & right\_knee & 50 & $[-1, 1]$ \\
+2 & right\_ankle & 20 & $[-1, 1]$ \\
+3 & left\_hip & 100 & $[-1, 1]$ \\
+4 & left\_knee & 50 & $[-1, 1]$ \\
+5 & left\_ankle & 20 & $[-1, 1]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+実際に環境に加わるトルクは，行動値 $a_i$ と対応する gear 値 $g_i$ の積 $a_i \times g_i$ として計算される．
+
+\subsubsection{報酬関数}
+
+時刻 $t$ における報酬 $r_t$ は，立位報酬 $r_{\mathrm{stand}}$ と移動報酬 $r_{\mathrm{move}}$ の組み合わせとして，
+\begin{align}
+r_t = \frac{r_{\mathrm{stand}} \cdot (5 r_{\mathrm{move}} + 1)}{6},
+\end{align}
+と定義される．
+
+立位報酬は，胴体高さ $h_t$ と上向き度 $u_t \in [-1,1]$ に基づき，
+\begin{align}
+r_{\mathrm{stand}} &= \frac{3 r_{\mathrm{height}} + r_{\mathrm{upright}}}{4}, \\
+r_{\mathrm{height}} &= \mathrm{tolerance}(h_t; \text{bounds}=(1.2, \infty), \text{margin}=0.6), \\
+r_{\mathrm{upright}} &= \frac{1 + u_t}{2},
+\end{align}
+とする．
+
+移動報酬は，水平方向速度 $v_t$ に基づき，
+\begin{align}
+r_{\mathrm{move}} = \mathrm{tolerance}(v_t; \text{bounds}=(1.0, \infty), \text{margin}=0.5, \text{sigmoid}=\text{`linear'}),
+\end{align}
+と定義する．報酬範囲は理論的には $[0, 1]$ である．
+
+\subsubsection{ランダム化設定}
+
+本研究では，Walker-Walk において2種類の物理パラメータ摂動を用いた：
+
+\paragraph{Torso 質量のランダム化}
+エピソードごとに Torso 質量を一様分布 $\mathcal{U}(0.5 \times 3.34, 2.5 \times 3.34)$ kg = $\mathcal{U}(1.67, 8.35)$ kg からサンプリングする．これは荷物運搬やペイロード変化を模擬する．
+
+\paragraph{Actuator gear のランダム化}
+エピソードごとに全アクチュエータの gear 値に対して，共通のスケール $s \sim \mathcal{U}(0.4, 1.4)$ を乗じる．これはモーター劣化やバッテリー消耗を模擬する．
+
+\subsubsection{動的環境設定}
+
+動的環境評価では，Walker-Walk において actuator gear スケールがエピソード内で線形に減衰する設定を用いた．初期値 $s_0=1.0$ から最終値 $s_{T}=0.4$ まで，500ステップにわたり線形減衰させる：
+\begin{align}
+s_t = 1.0 + (0.4 - 1.0) \times \frac{t}{T-1},
+\end{align}
+ただし $T=500$ である．この設定は，バッテリーの連続消耗などを模擬する．
+
+
+\clearpage
+\section{Implementation Details}
+\label{sec:appendix_implementation}
+
+本節では，第\ref{chap:proposal}章で提案した手法の実装上の詳細について述べる．
+
+\subsection{システムアーキテクチャ}
+\label{subsec:appendix_system_architecture}
+
+提案手法は，TD-MPC2 に明示的物理パラメータ推定モジュールを追加し，推定結果を条件として計画および制御に反映する構成をとる．システム全体は以下の2つのフェーズから構成される：
+
+\paragraph{フェーズ1: 物理パラメータ推定}
+過去 $K$ ステップ分の観測–行動履歴 $(\mathbf{o}_{t-K:t}, \mathbf{a}_{t-K:t-1})$ を GRU エンコーダに入力し，物理パラメータの潜在表現 $\hat{\mathbf{c}}_{\mathrm{phys}}$ を推定する．
+
+\paragraph{フェーズ2: 条件付き計画}
+推定された $\hat{\mathbf{c}}_{\mathrm{phys}}$ を世界モデル（dynamics, reward, Q-functions, policy prior）の条件として与え，MPPI プランナーにより行動系列を最適化する．
+
+\paragraph{勾配の分離}
+推定器とプランナーの学習を独立に保つため，推定された $\hat{\mathbf{c}}_{\mathrm{phys}}$ をプランナーに渡す際に勾配を切断する（\texttt{.detach()}）．これにより，プランナーの学習が推定器を不安定化することを防ぐ．
+
+
+\subsection{物理パラメータ推定器}
+\label{subsec:appendix_physics_estimator}
+
+\subsubsection{GRU アーキテクチャ}
+
+物理パラメータ推定器は，観測–行動履歴から物理パラメータを回帰する GRU ベースのニューラルネットワークである．
+
+\paragraph{入力}
+時系列 $\{(\mathbf{o}_{\tau}, \mathbf{a}_{\tau})\}_{\tau=t-K}^{t}$，ただし $K=50$ をコンテキスト長とする．
+
+\paragraph{アーキテクチャ}
+\begin{enumerate}
+\item \textbf{Input Projection}: 観測と行動を連結し，隠れ次元 256 に線形変換
+\begin{align}
+\mathbf{h}_{\tau}^{(0)} = \mathrm{ReLU}(\mathrm{LayerNorm}(\mathbf{W}_{\mathrm{in}} [\mathbf{o}_{\tau}; \mathbf{a}_{\tau}]))
+\end{align}
+
+\item \textbf{GRU}: 2層，隠れ次元 256，dropout 0.1
+\begin{align}
+\mathbf{h}_{\tau}^{(l)} = \mathrm{GRU}^{(l)}(\mathbf{h}_{\tau}^{(l-1)}), \quad l=1,2
+\end{align}
+
+\item \textbf{Output Head}: 最終ステップの隠れ状態から物理パラメータを回帰
+\begin{align}
+\hat{\mathbf{c}}_{\mathrm{phys}} = \tanh(\mathbf{W}_{\mathrm{out2}} \, \mathrm{ReLU}(\mathrm{LayerNorm}(\mathbf{W}_{\mathrm{out1}} \mathbf{h}_{t}^{(2)})))
+\end{align}
+\end{enumerate}
+
+出力は $\hat{\mathbf{c}}_{\mathrm{phys}} \in [-1, 1]^{d_c}$ の範囲に正規化される．本研究では $d_c=8$ を用いた．
+
+\paragraph{損失関数}
+推定器は，真の物理パラメータ $\mathbf{c}_{\mathrm{phys}}^{\mathrm{true}}$ との平均二乗誤差により学習する：
+\begin{align}
+\mathcal{L}_{\mathrm{aux}} = \|\hat{\mathbf{c}}_{\mathrm{phys}} - \mathbf{c}_{\mathrm{phys}}^{\mathrm{true}}\|_2^2
+\end{align}
+
+推定器は独立した Optimizer（Adam, 学習率 $3 \times 10^{-4}$）により更新される．
+
+
+\subsubsection{物理パラメータの正規化}
+
+環境ラッパー（\texttt{PhysicsParamWrapper}）が真の物理パラメータを取得し，以下のように正規化する：
+\begin{align}
+\mathbf{c}_{\mathrm{phys}}^{\mathrm{normalized}} = \frac{\mathbf{c}_{\mathrm{phys}}^{\mathrm{raw}} - \mathbf{c}_{\mathrm{default}}}{\sigma} \in [-1, 1]
+\end{align}
+ここで，$\mathbf{c}_{\mathrm{default}}$ はデフォルト値，$\sigma$ はランダム化範囲に基づくスケールである．
+
+
+\subsection{条件付き世界モデル}
+\label{subsec:appendix_conditional_world_model}
+
+提案手法の世界モデルは，推定された物理パラメータ $\hat{\mathbf{c}}_{\mathrm{phys}}$ を条件として受け取る．ベースラインの TD-MPC2 と比較して，各モジュールの入力に $\hat{\mathbf{c}}_{\mathrm{phys}}$ を追加する．
+
+\subsubsection{条件付けの実装}
+
+各ネットワークの入力に物理パラメータを連結する：
+
+\paragraph{Dynamics Model}
+\begin{align}
+\mathbf{z}_{t+1} = f_{\mathrm{dyn}}([\mathbf{z}_t; \mathbf{a}_t; \mathbf{e}_{\mathrm{task}}; \hat{\mathbf{c}}_{\mathrm{phys}}])
+\end{align}
+
+\paragraph{Reward Model}
+\begin{align}
+\hat{r}_t = f_{\mathrm{rew}}([\mathbf{z}_t; \mathbf{a}_t; \mathbf{e}_{\mathrm{task}}; \hat{\mathbf{c}}_{\mathrm{phys}}])
+\end{align}
+
+\paragraph{Q-functions}
+\begin{align}
+Q^{(i)}(\mathbf{z}_t, \mathbf{a}_t) = f_Q^{(i)}([\mathbf{z}_t; \mathbf{a}_t; \mathbf{e}_{\mathrm{task}}; \hat{\mathbf{c}}_{\mathrm{phys}}]), \quad i=1,\ldots,5
+\end{align}
+
+\paragraph{Policy Prior}
+\begin{align}
+\pi(\mathbf{a}_t | \mathbf{z}_t) = f_{\pi}([\mathbf{z}_t; \mathbf{e}_{\mathrm{task}}; \hat{\mathbf{c}}_{\mathrm{phys}}])
+\end{align}
+
+ここで，$[\cdot;\cdot]$ はベクトルの連結を表す．$\mathbf{e}_{\mathrm{task}}$ はタスク埋め込み（マルチタスク設定の場合）である．
+
+
+\subsection{学習アルゴリズム}
+\label{subsec:appendix_training_algorithm}
+
+提案手法の学習は，推定器の学習（教師あり）とプランナーの学習（強化学習）の2フェーズから構成される．
+
+\subsubsection{全体の学習手順}
+
+各ステップにおいて，以下の手順で学習を行う：
+
+\begin{enumerate}
+\item \textbf{経験の収集}: 環境とインタラクトし，観測 $\mathbf{o}_t$，行動 $\mathbf{a}_t$，報酬 $r_t$，および真の物理パラメータ $\mathbf{c}_{\mathrm{phys}}^{\mathrm{true}}$ を記録
+
+\item \textbf{Buffer への保存}: 過去 $K$ ステップの履歴とともに経験を保存
+
+\item \textbf{バッチサンプリング}: Buffer から $(H+1)$ ステップのトラジェクトリをサンプル
+
+\item \textbf{推定器の更新}: 
+\begin{align}
+\theta_{\mathrm{GRU}} \leftarrow \theta_{\mathrm{GRU}} - \alpha_{\mathrm{GRU}} \nabla_{\theta_{\mathrm{GRU}}} \mathcal{L}_{\mathrm{aux}}
+\end{align}
+
+\item \textbf{物理パラメータの推定}: 
+\begin{align}
+\hat{\mathbf{c}}_{\mathrm{phys}} = f_{\mathrm{GRU}}(\{\mathbf{o}_{\tau}, \mathbf{a}_{\tau}\}_{\tau=t-K}^{t}; \theta_{\mathrm{GRU}})
+\end{align}
+
+\item \textbf{勾配の切断}: 
+\begin{align}
+\hat{\mathbf{c}}_{\mathrm{phys}} \leftarrow \mathrm{detach}(\hat{\mathbf{c}}_{\mathrm{phys}})
+\end{align}
+
+\item \textbf{プランナーの更新}: $\hat{\mathbf{c}}_{\mathrm{phys}}$ を条件として，TD-MPC2 の損失により世界モデルを更新
+\begin{align}
+\mathcal{L}_{\mathrm{TDMPC2}} &= \mathcal{L}_{\mathrm{consistency}} + \mathcal{L}_{\mathrm{reward}} + \mathcal{L}_{\mathrm{value}} + \mathcal{L}_{\mathrm{termination}} \\
+\theta_{\mathrm{planner}} &\leftarrow \theta_{\mathrm{planner}} - \alpha_{\mathrm{planner}} \nabla_{\theta_{\mathrm{planner}}} \mathcal{L}_{\mathrm{TDMPC2}}
+\end{align}
+\end{enumerate}
+
+重要な点として，ステップ6の勾配切断により，プランナーの勾配が推定器に逆伝播しない．これにより，各モジュールが独立に学習可能となる．
+
+
+\subsubsection{Optimizer の設定}
+
+提案手法では3つの独立した Optimizer を用いる：
+
+\begin{table}[h]
+\centering
+\caption{Optimizer の設定}
+\label{tab:appendix_optimizers}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Optimizer} & \textbf{対象パラメータ} & \textbf{学習率} \\
+\midrule
+GRU Optimizer & 推定器 & $3 \times 10^{-4}$ \\
+Planner Optimizer & Encoder, Dynamics, Reward, Q, Termination & $1 \times 10^{-3}$ \\
+Policy Optimizer & Policy Prior & $1 \times 10^{-3}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsubsection{教師ラベルの取得}
+
+シミュレーション環境では，真の物理パラメータは環境ラッパーから直接取得可能である．各エピソードの開始時に物理パラメータがサンプリングされ，エピソード中は固定される．この物理パラメータを正規化したものを教師ラベルとして用いる．
+
+実世界への展開においては，キャリブレーションや設計値を教師ラベルとして利用することが考えられる．また，オンライン同定手法（例：最小二乗法）により推定した値を擬似ラベルとして用いることも可能である．

@@ -117,7 +117,7 @@
           \put(-2.5,3){\makebox(0,0)[r]{\makebox[2cm]{指\hfil 導\hfil 教\hfil 員}}}%
           \put(2.5,3){\makebox(0,0){\parbox{8cm}{\center \LARGE \@professor}}}%
         \fi
-        \put(2.5,-6.5){\makebox(0,0)[t]{\@course\ \@department}}%
+        \put(2.5,-5){\makebox(0,0)[t]{\parbox{10cm}{\center \@course\\\@department}}}%
         \put(-0.5,-8.5){\makebox(0,0)[rb]{\makebox[1.5cm]{氏\hfil 名}}}%
         \put(2.5,-8.7){\makebox(0,0)[b]{\LARGE \underline{\@author}}}%
         \put(2.5,-10){\makebox(0,0)[t]{\large \@date}}%

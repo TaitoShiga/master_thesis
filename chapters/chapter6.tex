@@ -15,6 +15,14 @@
 
 Pendulum-Swingup タスクにおいて，振子の質量を変化させた環境での性能評価結果を示す．図\ref{fig:performance_curves}に各手法の性能曲線を，表\ref{tab:pendulum_results}に定量評価結果を示す．
 
+図\ref{fig:performance_curves}は，
+横軸にポール質量のデフォルト値からの倍率，
+縦軸に IQM（Interquartile Mean）を示している．
+緑色の帯状領域は訓練環境において設定された質量のランダム化範囲（0.5--2.5倍）を表す．
+各手法の性能曲線は，赤（Oracle TD-MPC2），黄色（Domain Randomization），緑（提案手法：Adaptive），青（Non-adaptive TD-MPC2）で示されており，
+各曲線周辺の淡色の帯は標準偏差を表す．
+評価は5つの独立した乱数シードごとに，それぞれ30エピソード分の累積報酬を収集して算出している．
+
 \begin{figure}[tb]
 \centering
 \includegraphics[width=0.85\linewidth]{figures/performance_curves.png}
@@ -28,7 +36,7 @@ Pendulum-Swingup タスクにおいて，振子の質量を変化させた環境
     \label{tab:pendulum_results}
     \begin{tabular}{lcccc}
     \toprule
-    \textbf{質量 [kg]} & \textbf{Non-adaptive} & \textbf{DR} & \textbf{Adaptive (Ours)} & \textbf{Oracle} \\
+    \textbf{質量(倍率)} & \textbf{Non-adaptive} & \textbf{DR} & \textbf{Adaptive (Ours)} & \textbf{Oracle} \\
     \midrule
     0.5  & $897.3 \pm 22.5$ & $892.6 \pm 26.8$ & $\mathbf{903.8 \pm 21.3}$ & $\mathbf{908.5 \pm 16.2}$ \\
     1.0  & $827.4 \pm 26.7$ & $842.9 \pm 31.4$ & $\mathbf{838.2 \pm 25.9}$ & $\mathbf{848.6 \pm 21.5}$ \\
@@ -60,11 +68,18 @@ Pendulum-Swingup タスクにおいて，振子の質量を変化させた環境
 \label{subsec:walker_actuator_performance}
 
 Walker-Walk タスクにおいて，アクチュエータの出力スケールを変化させた環境での性能評価結果を示す．図\ref{fig:walker_actuator_performance}に各手法の性能曲線を，表\ref{tab:walker_results}に定量評価結果を示す．
+図\ref{fig:walker_actuator_performance}は，図\ref{fig:performance_curves}と同様に，
+横軸にアクチュエータ出力スケールのデフォルト値からの倍率，
+縦軸に IQMを示している．
+緑色の帯状領域は訓練環境において設定されたアクチュエータ出力スケールのランダム化範囲（0.4--1.4倍）を表す．
+各手法の性能曲線は，赤（Oracle TD-MPC2），黄色（Domain Randomization），緑（提案手法：Adaptive），青（Non-adaptive TD-MPC2）で示されており，
+各曲線周辺の淡色の帯は標準偏差を表す．
+評価は5つの独立した乱数シードごとに，それぞれ30エピソード分の累積報酬を収集して算出している．
 
 \begin{figure}[tb]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/walker_actuator_performance_curves.png}
-\caption{Walker-Walk における actuator gear scale 変化に対する性能評価\\赤色の線は,}
+\caption{Walker-Walk における actuator gear scale 変化に対する性能評価}
 \label{fig:walker_actuator_performance}
 \end{figure}
 
@@ -105,6 +120,10 @@ Domain Randomization および Oracle TD-MPC2 も性能低下を示すが，
 \label{subsec:walker_dynamic_evaluation}
 
 Walker-Walk タスクにおいて，エピソード内でアクチュエータの出力スケールが時間的に線形に減衰する動的環境での評価結果を示す．図\ref{fig:walker_dynamic_compare}に，エピソード内での各手法の適応挙動を示す．
+上段のグラフは, 横軸に時刻，縦軸にアクチュエータ出力スケールを示しており,
+下段のグラフは, 横軸に時刻, 縦軸に単一ステップあたりの報酬を示している.
+赤色の線はOracle TD-MPC2，黄色の線はDomain Randomization，緑色の線は提案手法：Adaptive，青色の線はNon-adaptive TD-MPC2を示しており,
+各曲線周辺の淡色の帯は標準偏差を表す．評価は5つの独立した乱数シードごとに，それぞれ30エピソード分の累積報酬を収集して算出している．
 
 \begin{figure}[tb]
 \centering
@@ -130,8 +149,6 @@ Non-adaptive より劣化は緩やかである．
 これに対し，提案手法（Adaptive）は，
 エピソードを通して高い報酬水準を維持し，
 後半の劣化も小さい．
-Model C は後半まで高い報酬を保ちつつ，
-終盤で緩やかな低下が現れる．
 Oracle TD-MPC2 はエピソード全体にわたり，
 ほぼ一定の報酬を示している．
 
@@ -149,6 +166,8 @@ Pendulum-Swingup タスクにおいて，
 エピソード内での振子質量の推定挙動を評価した結果を示す．
 図\ref{fig:pendulum_estimation_convergence}に，
 異なる真値質量条件における推定値の時系列を示す．
+左上, 右上, 左下, 右下のグラフはそれぞれ, 真値質量が0.6倍, 1.0倍, 1.4倍, 1.8倍の条件において,
+横軸に時刻, 縦軸に推定質量のデフォルト値からの倍率を示している．評価は一つのシードを用いて行った.
 
 \begin{figure}[tb]
 \centering
@@ -179,6 +198,8 @@ Walker-Walk タスクにおいて，
 エピソード内でのアクチュエータ出力スケールの推定挙動を評価した結果を示す．
 図\ref{fig:walker_estimation_convergence}に，
 異なる真値スケール条件における推定値の時系列を示す．
+左上, 右上, 左下, 右下のグラフはそれぞれ, 真値スケールが0.6倍, 0.8倍, 1.0倍, 1.2倍の条件において,
+横軸に時刻, 縦軸に推定スケールを示している．評価は一つのシードを用いて行った.
 
 \begin{figure}[tb]
 \centering
@@ -203,7 +224,7 @@ Walker-Walk タスクにおいて，
 エピソード後半では推定値が真値周辺で推移しており，
 推定値の時間的変動が一定範囲に収まっていることが確認される．
 
-\subsection{Walker-Walk におけるアクチュエータスケール追従挙動（動的環境）}
+\subsection{Walker-Walk におけるアクチュエータスケール追従挙動}
 \label{subsec:walker_estimation_follow_behavior}
 
 Walker-Walk タスクにおいて，
@@ -211,11 +232,12 @@ Walker-Walk タスクにおいて，
 推定挙動を評価した結果を示す．
 図\ref{fig:walker_dynamic_estimation}に，
 真のスケール変化と推定値の時系列を示す．
+図上の赤色の点線は各時刻における真のスケールを, 青色の線は推定されたスケール, 青色のシェードは推定値の標準偏差を示している．
 
 \begin{figure}[tb]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/walker_dynamic_estimation_timeseries.png}
-\caption{Walker-Walk における動的環境でのアクチュエータスケール推定挙動（平均 $\pm 1\sigma$）}
+\caption{Walker-Walk における動的環境でのアクチュエータスケール推定挙動}
 \label{fig:walker_dynamic_estimation}
 \end{figure}
 

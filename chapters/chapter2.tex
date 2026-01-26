@@ -29,10 +29,7 @@ RLは，
 
 RLで扱われる問題は一般に，
 マルコフ決定過程（Markov Decision Process: MDP）\cite{markov}として定式化される．
-MDPは以下のタプルで表される：
-\[
-\mathcal{M} = (\mu_0, \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)
-\]
+MDPは$\mathcal{M} = (\mu_0, \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$というタプルで表される．
 ここで，$\mu_0$は初期状態分布，
 $\mathcal{S}$は状態空間，
 $\mathcal{A}$は行動空間を表す．
@@ -43,19 +40,14 @@ $\gamma\in(0,1]$は割引率であり，将来報酬の重要度を調整する�
 
 エピソード終了条件を持たない継続タスク（non-episodic task）の場合，
 累積報酬が有限に定義されるためには割引率が $\gamma<1$ を満たす必要がある．
-これは，
-\[
-\sum_{t=0}^{\infty}\gamma^t r_t
-\]
-が収束するための十分条件であり，
+これは，\\$\sum_{t=0}^{\infty}\gamma^t r_t$が収束するための十分条件であり，
 割引率は数学的にwell-definedな価値関数を保証する役割を持つ．
 
 エージェントは確率的方策
 $\pi(a|s)$に従って行動し，
-状態価値関数$V_{\mathcal{M}}^{\pi}(s)$は
+状態価値関数は
 \begin{equation}
-V_{\mathcal{M}}^{\pi}(s)
-= \mathbb{E}_{\pi}\left[\sum_{t=0}^{\infty}\gamma^{t}r_t \mid s_0=s \right]
+V_{\mathcal{M}}^{\pi}(s) = \mathbb{E}_{\pi}\left[\sum_{t=0}^{\infty}\gamma^{t}r_t \mid s_0=s \right]
 \label{eq:V}
 \end{equation}
 として定義される．
@@ -64,28 +56,14 @@ V_{\mathcal{M}}^{\pi}(s)
 
 同様に行動価値関数は
 \begin{equation}
-Q_{\mathcal{M}}^{\pi}(s,a)
-= \mathbb{E}_{s'\sim\mathcal{P}(\cdot|s,a)}
-\left[
-\mathcal{R}(s,a,s')+\gamma V_{\mathcal{M}}^{\pi}(s')
-\right]
+Q_{\mathcal{M}}^{\pi}(s,a) = \mathbb{E}_{s'\sim\mathcal{P}(\cdot|s,a)} \left[ \mathcal{R}(s,a,s')+\gamma V_{\mathcal{M}}^{\pi}(s') \right]
 \label{eq:Q}
 \end{equation}
 として定義される．
 
 RLの最終目標は，
-最適行動価値関数
-\[
-Q_{\mathcal{M}}^{*}(s,a)
-=\sup_{\pi} Q_{\mathcal{M}}^{\pi}(s,a)
-\]
-に基づき，
-最適方策
-\[
-\pi_{\mathcal{M}}^{*}(s)
-=\argmax_{a\in\mathcal{A}} Q_{\mathcal{M}}^{*}(s,a)
-\]
-を求めることである．
+最適行動価値関数$Q_{\mathcal{M}}^{*}(s,a) =\sup_{\pi} Q_{\mathcal{M}}^{\pi}(s,a)$に基づき，
+最適方策$\pi_{\mathcal{M}}^{*}(s) =\argmax_{a\in\mathcal{A}} Q_{\mathcal{M}}^{*}(s,a)$を求めることである．
 
 この目的は，
 方策$\pi$に誘導される定常状態行動分布
@@ -101,11 +79,7 @@ $\mu^{\pi}(s,a)$を用いて，
 \end{equation}
 ここで$\mu^{\pi}$は，
 遷移確率$\mathcal{P}$と方策$\pi$により定まるマルコフ連鎖の定常分布であり，
-\begin{equation}
-\mu^{\pi}(s,a)
-= d^{\pi}(s)\pi(a|s)
-\end{equation}
-と表される．
+$\mu^{\pi}(s,a) = d^{\pi}(s)\pi(a|s)$と表される．
 $d^{\pi}(s)$は方策$\pi$に従ったときの状態定常分布である．
 
 このとき，
@@ -117,6 +91,7 @@ $d^{\pi}(s)$は方策$\pi$に従ったときの状態定常分布である．
 \left[
 V_{\mathcal{M}}^{\pi}(s_0)
 \right]
+\label{eq:J2}
 \end{equation}
 すなわち，
 価値関数の最大化と
@@ -130,22 +105,32 @@ RLアルゴリズムは，
 
 \subsection{TD学習}
 \label{sec:tderror}
-Temporal Difference (TD)学習は, TD誤差と呼ばれる, 1ステップ先の期待報酬の推定値と現在の期待報酬の推定値との差分
-を用いて価値関数を更新する手法である\cite{sutton2018reinforcement}.TD学習はモデルフリーな予測を行う
-アルゴリズムであり, エージェントはMDPの情報が与えられない.よってエージェントはMDPのサンプルから
-状態価値を推定する.状態価値関数の更新則は以下の式\ref{eq:td}の通りとなる.
+TD学習は，環境の遷移確率や報酬関数といったMDPの完全なモデルを既知としないアルゴリズムである\cite{kaelbling1996reinforcement}．
+エージェントは環境の動態を事前に与えられないため，実際に環境内で行動して得られた状態遷移や報酬の時系列データ，
+すなわちMDPの実行サンプルを観測することで状態価値を推定する．
+状態価値関数の更新は，以下の式により定義される．
 \begin{equation}
+    V_{\mathcal{M}}^{\pi}(s_t) \leftarrow V_{\mathcal{M}}^{\pi}(s_t) + \alpha \left( r_{t+1} + \gamma V_{\mathcal{M}}^{\pi}(s_{t+1}) - V_{\mathcal{M}}^{\pi}(s_t) \right)
     \label{eq:td}
-    V_{\mathcal{M}}^{\pi}(s) \leftarrow V_{\mathcal{M}}^{\pi}(s) + \alpha(r_{t+1} + \gamma V_{\mathcal{M}}^{\pi}(s_{t+1}) - V_{\mathcal{M}}^{\pi}(s_{t}))
 \end{equation}
-ここで$\alpha$は学習率を表し, $r_{t+1}$は現在のステップ$t$で行動した結果, 次のステップ$t+1$に遷移する際に得られた報酬である.
-$r_{t+1}+\gamma V_{\mathcal{M}}^\pi$はTD目標と呼ばれ, 今回のサンプリングで得られた値を, 
-$r_{t+1}+\gamma V_{\mathcal{M}}^\pi-V_{\mathcal{M}}^\pi$はTD誤差で, 今回のサンプリングの値と前回までに得た値の差を表している.
-TD学習の利点は, 学習に状態価値関数の推定値を用いているため, エージェントがエピソードを完了していなくても
-その状態から先の報酬を予測(ブートストラップ)し, 学習を1ステップからでも行うことが可能である.
+ここで $\alpha$ は学習率，$r_{t+1}$ は時刻 $t$ における行動の結果として，
+次状態 $s_{t+1}$ へ遷移する際に得られた即時報酬である．
+式中の括弧内は2つの要素の差分で構成されており，
+$r_{t+1} + \gamma V_{\mathcal{M}}^{\pi}(s_{t+1})$ はTD目標（TD target）と呼ばれる．
+これは観測された即時報酬と次状態の推定価値を組み合わせた値であり，
+1ステップ先の遷移に基づいて得られた新たな状態価値の推定値を表す．
+一方，$V_{\mathcal{M}}^{\pi}(s_t)$ は，
+前回の更新までに保持されていた現在の状態 $s_t$ における価値推定値である．
+これらの差はTD誤差と呼ばれ，
+実際の遷移から得られた新しい見積もりと従来の予測との乖離を表している．
+TD学習ではこの誤差に比例して価値関数を更新することで，
+状態価値の推定精度を逐次的に改善する．
+さらに，TD学習は次状態の推定値を用いて更新を行うため，
+エピソードの終了を待つことなく各ステップの遷移ごとに価値推定が可能となり，
+オンラインで効率的な学習を実現している．
 
-以上のように，価値推定と方策改善の枠組みは強化学習の基礎を成す．
-しかし，実環境での試行錯誤には安全性やコストの制約が大きく，
+以上のようなRLの基礎理論に対し，
+実環境での応用においては大量のデータ取得に安全性やコストの制約が大きいため，
 限られたデータから効率的に学習する枠組みが必要となる．
 この観点から，環境モデルを明示的に学習し計画に利用するMBRLが検討されてきた．
 
