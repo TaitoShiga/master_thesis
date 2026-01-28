@@ -189,7 +189,11 @@ DNNを用いたモデル学習においては，
 r(s_{t'},  a_{t'})
 \label{eq:mbrl_planning}
 \end{equation}
-ここで $H$ は予測ホライゾンを表す \cite{nagabandi2018neural}．
+ここで $H$ は予測ホライゾンを表す\cite{nagabandi2018neural}．
+$s_{t'}$ は世界モデルによって予測される潜在状態である.
+また $r(s_{t'}, a_{t'})$ は，
+潜在状態 $s_{t'}$ と行動 $a_{t'}$ に基づいて
+報酬モデルによって予測される報酬を表す.
 
 この枠組みの代表例である TD-MPC2 \cite{hansen2023td} は，
 潜在空間上での状態遷移，報酬予測，

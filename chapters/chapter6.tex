@@ -19,13 +19,14 @@ Pendulum-Swingup タスクにおいて，振子の質量を変化させた環境
 横軸にポール質量のデフォルト値からの倍率，
 縦軸に IQM（Interquartile Mean）を示している．
 緑色の帯状領域は訓練環境において設定された質量のランダム化範囲（0.5--2.5倍）を表す．
+それ以外の範囲は訓練環境で設定されていない質量で, 境界を赤色の点線でOOD Boundaryとして示している．
 各手法の性能曲線は，赤（Oracle TD-MPC2），黄色（Domain Randomization），緑（提案手法：Adaptive），青（Non-adaptive TD-MPC2）で示されており，
 各曲線周辺の淡色の帯は標準偏差を表す．
 評価は5つの独立した乱数シードごとに，それぞれ30エピソード分の累積報酬を収集して算出している．
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/performance_curves.png}
+\includegraphics[width=0.85\linewidth]{figures/pendulum_estimation_convergence2.png}
 \caption{Pendulum-Swingup における質量摂動に対する性能評価}
 \label{fig:performance_curves}
 \end{figure}
@@ -72,13 +73,14 @@ Walker-Walk タスクにおいて，アクチュエータの出力スケール�
 横軸にアクチュエータ出力スケールのデフォルト値からの倍率，
 縦軸に IQMを示している．
 緑色の帯状領域は訓練環境において設定されたアクチュエータ出力スケールのランダム化範囲（0.4--1.4倍）を表す．
+その範囲外は訓練環境で設定されていないアクチュエータ出力スケールで, 境界を赤色の点線でOOD Boundaryとして示している．
 各手法の性能曲線は，赤（Oracle TD-MPC2），黄色（Domain Randomization），緑（提案手法：Adaptive），青（Non-adaptive TD-MPC2）で示されており，
 各曲線周辺の淡色の帯は標準偏差を表す．
 評価は5つの独立した乱数シードごとに，それぞれ30エピソード分の累積報酬を収集して算出している．
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/walker_actuator_performance_curves.png}
+\includegraphics[width=0.9\linewidth]{figures/walker_actuator_performance_curves2.png}
 \caption{Walker-Walk における actuator gear scale 変化に対する性能評価}
 \label{fig:walker_actuator_performance}
 \end{figure}
@@ -127,7 +129,7 @@ Walker-Walk タスクにおいて，エピソード内でアクチュエータ�
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/walker_actuator_dynamic_compare.png}
+\includegraphics[width=0.85\linewidth]{figures/shuusei.png}
 \caption{Walker-Walk におけるエピソード内での適応挙動（動的環境評価）}
 \label{fig:walker_dynamic_compare}
 \end{figure}
